@@ -15,7 +15,6 @@
   }
   body { background: var(--light); color: var(--dark); }
 
-  /* HEADER */
   header {
     background: white;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
@@ -31,10 +30,7 @@
   }
   .logo { font-size: 24px; font-weight: bold; color: var(--primary); }
   .logo span { color: var(--dark); }
-  .search-bar {
-    flex: 1; max-width: 500px; margin: 0 30px;
-    position: relative;
-  }
+  .search-bar { flex: 1; max-width: 500px; margin: 0 30px; position: relative; }
   .search-bar input {
     width: 100%; padding: 12px 45px 12px 20px; border: 2px solid #eee;
     border-radius: 30px; outline: none; transition: .3s;
@@ -47,8 +43,7 @@
   }
   .nav-icons { display: flex; gap: 20px; align-items: center; }
   .nav-icons .icon {
-    position: relative; cursor: pointer; font-size: 22px;
-    transition: .3s;
+    position: relative; cursor: pointer; font-size: 22px; transition: .3s;
   }
   .nav-icons .icon:hover { transform: scale(1.15); }
   .badge {
@@ -57,7 +52,6 @@
     padding: 2px 6px; border-radius: 10px; font-weight: bold;
   }
 
-  /* KATEGORI */
   .categories {
     display: flex; gap: 15px; padding: 20px 5%; overflow-x: auto;
     max-width: 1400px; margin: auto;
@@ -71,13 +65,12 @@
     background: var(--primary); color: white; border-color: var(--primary);
   }
 
-  /* HERO */
   .hero {
     background: linear-gradient(135deg, #ffd6e7, #ffe9f2);
     padding: 50px 5%; text-align: center; border-radius: 20px;
-    margin: 20px 5%; max-width: 1300px; margin-left: auto; margin-right: auto;
+    margin: 20px auto; max-width: 1300px;
   }
-  .hero h1 { font-size: 38px; color: var(--dark); margin-bottom: 15px; }
+  .hero h1 { font-size: 38px; margin-bottom: 15px; }
   .hero h1 span { color: var(--primary); }
   .hero p { color: #666; margin-bottom: 20px; }
   .hero button {
@@ -87,11 +80,7 @@
   }
   .hero button:hover { background: #e5517f; transform: translateY(-2px); }
 
-  /* PRODUK GRID */
-  .section-title {
-    text-align: center; margin: 40px 0 20px;
-    font-size: 28px; color: var(--dark);
-  }
+  .section-title { text-align: center; margin: 40px 0 20px; font-size: 28px; }
   .section-title span { color: var(--primary); }
   .products {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
@@ -99,12 +88,9 @@
   }
   .product-card {
     background: white; border-radius: 15px; overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: .3s;
-    position: relative;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: .3s; position: relative;
   }
-  .product-card:hover {
-    transform: translateY(-5px); box-shadow: 0 8px 25px rgba(255,107,157,0.2);
-  }
+  .product-card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(255,107,157,0.2); }
   .product-img {
     width: 100%; height: 220px; background: var(--secondary);
     display: flex; align-items: center; justify-content: center;
@@ -114,20 +100,15 @@
     position: absolute; top: 10px; right: 10px;
     background: white; border: none; width: 38px; height: 38px;
     border-radius: 50%; cursor: pointer; font-size: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: .3s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
-  .wishlist-btn.active { background: var(--primary); }
-  .wishlist-btn:hover { transform: scale(1.1); }
   .product-info { padding: 15px; }
   .product-name {
     font-size: 15px; font-weight: 600; margin-bottom: 5px;
     height: 40px; overflow: hidden;
   }
   .product-rating { color: #ffc107; font-size: 13px; margin-bottom: 8px; }
-  .product-price {
-    color: var(--primary); font-size: 18px; font-weight: bold;
-    margin-bottom: 10px;
-  }
+  .product-price { color: var(--primary); font-size: 18px; font-weight: bold; margin-bottom: 10px; }
   .product-price .old {
     color: #999; font-size: 13px; text-decoration: line-through;
     margin-left: 8px; font-weight: normal;
@@ -135,11 +116,10 @@
   .btn-add {
     width: 100%; background: var(--primary); color: white;
     border: none; padding: 10px; border-radius: 10px;
-    cursor: pointer; font-weight: 600; transition: .3s;
+    cursor: pointer; font-weight: 600;
   }
   .btn-add:hover { background: #e5517f; }
 
-  /* MODAL */
   .modal {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.5); z-index: 1000;
@@ -173,9 +153,7 @@
   .cart-item-info { flex: 1; }
   .cart-item-info h4 { font-size: 15px; margin-bottom: 5px; }
   .cart-item-info p { color: var(--primary); font-weight: bold; }
-  .qty-control {
-    display: flex; align-items: center; gap: 8px; margin-top: 5px;
-  }
+  .qty-control { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
   .qty-control button {
     width: 28px; height: 28px; border: 1px solid #ddd;
     background: white; border-radius: 6px; cursor: pointer;
@@ -183,8 +161,7 @@
   .qty-control button:hover { background: var(--primary); color: white; }
   .remove-btn {
     background: #ff4444; color: white; border: none;
-    padding: 6px 12px; border-radius: 8px; cursor: pointer;
-    font-size: 12px;
+    padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px;
   }
   .cart-total {
     display: flex; justify-content: space-between;
@@ -198,24 +175,15 @@
   }
   .checkout-btn:hover { background: #e5517f; }
 
-  /* FORM */
   .form-group { margin-bottom: 15px; }
-  .form-group label {
-    display: block; margin-bottom: 5px;
-    font-weight: 500; font-size: 14px;
-  }
+  .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
   .form-group input, .form-group textarea, .form-group select {
     width: 100%; padding: 12px; border: 2px solid #eee;
     border-radius: 10px; outline: none; font-size: 14px;
   }
-  .form-group input:focus, .form-group textarea:focus {
-    border-color: var(--primary);
-  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--primary); }
 
-  /* DETAIL PRODUK */
-  .detail-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
-  }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
   .detail-img {
     background: var(--secondary); border-radius: 15px;
     height: 300px; display: flex; align-items: center;
@@ -225,7 +193,6 @@
   .detail-info .price { font-size: 28px; color: var(--primary); margin: 15px 0; }
   .detail-info p { color: #666; line-height: 1.6; margin-bottom: 15px; }
 
-  /* TOAST */
   .toast {
     position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(100px);
@@ -236,29 +203,52 @@
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-  /* EMPTY STATE */
-  .empty {
-    text-align: center; padding: 40px; color: #999;
-  }
+  .empty { text-align: center; padding: 40px; color: #999; }
   .empty .emoji { font-size: 60px; margin-bottom: 15px; }
 
-  /* LOGIN TABS */
   .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
   .tab {
     flex: 1; padding: 12px; border: 2px solid #eee;
-    background: white; border-radius: 10px; cursor: pointer;
-    font-weight: 600;
+    background: white; border-radius: 10px; cursor: pointer; font-weight: 600;
   }
   .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-  /* FOOTER */
+  /* QRIS STYLES */
+  .qris-box {
+    background: linear-gradient(135deg, #fff5f9, #ffe9f2);
+    border: 2px dashed var(--primary);
+    border-radius: 15px; padding: 20px; text-align: center; margin: 15px 0;
+  }
+  .qris-box img {
+    width: 100%; max-width: 280px; border-radius: 12px;
+    background: white; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .qris-box .qris-title {
+    font-weight: bold; color: var(--primary); font-size: 18px; margin-bottom: 10px;
+  }
+  .qris-box .qris-note {
+    font-size: 13px; color: #666; margin-top: 10px; line-height: 1.5;
+  }
+  .qris-amount {
+    background: var(--primary); color: white;
+    padding: 10px 20px; border-radius: 30px;
+    display: inline-block; font-weight: bold; font-size: 18px;
+    margin: 10px 0;
+  }
+  .qris-qr {
+    border-radius: 12px;
+    max-width: 260px;
+    margin: 0 auto;
+    display: block;
+  }
+
   footer {
     background: #333; color: white; padding: 40px 5%;
     margin-top: 60px; text-align: center;
   }
   footer p { color: #aaa; margin-top: 10px; }
+  footer a { color: var(--primary); text-decoration: none; }
 
-  /* RESPONSIVE */
   @media (max-width: 768px) {
     .navbar { flex-wrap: wrap; gap: 10px; }
     .search-bar { order: 3; width: 100%; margin: 10px 0; max-width: 100%; }
@@ -272,9 +262,8 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
-  <div class="top-bar">🚚 GRATIS ONGKIR Min. Belanja Rp 200.000 | 🎁 Diskon 20% untuk Member Baru</div>
+  <div class="top-bar">🚚 GRATIS ONGKIR Min. Belanja Rp 200.000 | 💳 Pembayaran QRIS Mudah & Cepat</div>
   <div class="navbar">
     <div class="logo">🍼 Baby<span>Care</span></div>
     <div class="search-bar">
@@ -293,7 +282,6 @@
   </div>
 </header>
 
-<!-- KATEGORI -->
 <div class="categories">
   <button class="cat-btn active" onclick="filterCategory('all', this)">Semua</button>
   <button class="cat-btn" onclick="filterCategory('baju', this)">👕 Baju Bayi</button>
@@ -304,22 +292,20 @@
   <button class="cat-btn" onclick="filterCategory('sepatu', this)">👟 Sepatu</button>
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <h1>Fashion & Baby Care <span>Terlengkap</span> 👶</h1>
   <p>Koleksi pakaian bayi lucu, perawatan lembut, dan mainan edukatif untuk si kecil</p>
   <button onclick="scrollToProducts()">Belanja Sekarang 🛍️</button>
 </div>
 
-<!-- PRODUK -->
 <h2 class="section-title" id="productsTitle">Produk <span>Terbaru</span></h2>
 <div class="products" id="productGrid"></div>
 
-<!-- FOOTER -->
 <footer>
   <h3>🍼 BabyCare Shop</h3>
   <p>© 2025 BabyCare Shop. Semua hak dilindungi.</p>
   <p>📞 0812-3456-7890 | ✉️ hello@babycare.id</p>
+  <p style="margin-top:15px"><a href="admin.html">🔐 Admin Panel</a></p>
 </footer>
 
 <!-- MODAL CART -->
@@ -355,16 +341,6 @@
         <input type="text" required id="custCity">
       </div>
       <div class="form-group">
-        <label>Metode Pembayaran *</label>
-        <select id="paymentMethod" required>
-          <option value="">-- Pilih Metode --</option>
-          <option value="Transfer Bank">Transfer Bank</option>
-          <option value="COD">COD (Bayar di Tempat)</option>
-          <option value="E-Wallet">E-Wallet (OVO/Dana/GoPay)</option>
-          <option value="QRIS">QRIS</option>
-        </select>
-      </div>
-      <div class="form-group">
         <label>Catatan (opsional)</label>
         <textarea rows="2" id="custNote"></textarea>
       </div>
@@ -372,8 +348,37 @@
         <span>Total Bayar:</span>
         <span id="checkoutTotal">Rp 0</span>
       </div>
-      <button type="submit" class="checkout-btn">✅ Konfirmasi Pesanan</button>
+      <button type="submit" class="checkout-btn">📱 Lanjut ke Pembayaran QRIS</button>
     </form>
+  </div>
+</div>
+
+<!-- MODAL QRIS PAYMENT -->
+<div class="modal" id="qrisModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('qrisModal')">×</button>
+    <h2>💳 Pembayaran QRIS</h2>
+    <div class="qris-box">
+      <div class="qris-title">Scan QRIS untuk Membayar</div>
+      <img src="qris.png" alt="QRIS BabyCare Shop" class="qris-qr" 
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+      <div style="display:none; padding:20px; color:#999; font-size:14px;">
+        ⚠️ File <b>qris.png</b> belum tersedia.<br>
+        Silakan letakkan gambar QRIS Anda dengan nama <b>qris.png</b> di folder yang sama.
+      </div>
+      <div class="qris-amount" id="qrisAmount">Rp 0</div>
+      <div class="qris-note">
+        ✅ Scan dengan aplikasi apapun yang mendukung QRIS<br>
+        (OVO, Dana, GoPay, ShopeePay, LinkAja, Mobile Banking)
+      </div>
+    </div>
+    <div style="background:#fff9e6;padding:15px;border-radius:10px;margin:15px 0;font-size:13px;color:#666;">
+      <b>📋 No. Pesanan:</b> <span id="qrisOrderId" style="color:var(--primary);font-weight:bold;"></span><br>
+      <b>👤 Nama:</b> <span id="qrisCustName"></span><br>
+      <b>📞 HP:</b> <span id="qrisCustPhone"></span>
+    </div>
+    <button class="checkout-btn" onclick="confirmPayment()">✅ Saya Sudah Bayar</button>
+    <button onclick="cancelPayment()" style="width:100%;background:#eee;color:#666;border:none;padding:12px;border-radius:12px;margin-top:10px;cursor:pointer;font-weight:600;">Batal</button>
   </div>
 </div>
 
@@ -395,29 +400,14 @@
       <button class="tab" onclick="switchTab('register', this)">Daftar</button>
     </div>
     <form id="loginForm" onsubmit="doLogin(event)">
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" required>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" required>
-      </div>
+      <div class="form-group"><label>Email</label><input type="email" required></div>
+      <div class="form-group"><label>Password</label><input type="password" required></div>
       <button type="submit" class="checkout-btn">Masuk</button>
     </form>
     <form id="registerForm" style="display:none" onsubmit="doRegister(event)">
-      <div class="form-group">
-        <label>Nama Lengkap</label>
-        <input type="text" required>
-      </div>
-      <div class="form-group">
-        <label>Email</label>
-        <input type="email" required>
-      </div>
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" required>
-      </div>
+      <div class="form-group"><label>Nama Lengkap</label><input type="text" required></div>
+      <div class="form-group"><label>Email</label><input type="email" required></div>
+      <div class="form-group"><label>Password</label><input type="password" required></div>
       <button type="submit" class="checkout-btn">Daftar</button>
     </form>
   </div>
@@ -432,44 +422,52 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ========== DATA PRODUK ==========
-const products = [
-  { id: 1, name: "Baju Bayi Lengan Panjang Katun Premium", price: 75000, oldPrice: 95000, category: "baju", emoji: "👕", rating: 4.8, desc: "Bahan katun 100% lembut, aman untuk kulit sensitif bayi. Tersedia ukuran 0-24 bulan." },
-  { id: 2, name: "Celana Joger Bayi Lucu Motif Hewan", price: 55000, oldPrice: 70000, category: "celana", emoji: "👖", rating: 4.7, desc: "Celana joger elastis dengan motif hewan menggemaskan. Nyaman untuk aktivitas bayi." },
-  { id: 3, name: "Topi Bayi Rajut Import Premium", price: 35000, oldPrice: 45000, category: "aksesoris", emoji: "🧢", rating: 4.9, desc: "Topi rajut lembut, hangat, dan stylish. Cocok untuk newborn hingga 12 bulan." },
-  { id: 4, name: "Sabun Mandi Bayi Organik 500ml", price: 65000, oldPrice: 85000, category: "perawatan", emoji: "🧴", rating: 4.8, desc: "Sabun organik dengan formula lembut, bebas SLS dan paraben. Aman untuk kulit bayi." },
-  { id: 5, name: "Mainan Edukasi Rattle Set 5in1", price: 120000, oldPrice: 150000, category: "mainan", emoji: "🧸", rating: 4.9, desc: "Set mainan rattle edukatif untuk stimulasi sensorik dan motorik bayi." },
-  { id: 6, name: "Sepatu Bayi Soft Sole Anti Slip", price: 85000, oldPrice: 110000, category: "sepatu", emoji: "👟", rating: 4.7, desc: "Sepatu soft sole dengan anti slip, melindungi kaki bayi saat belajar berjalan." },
-  { id: 7, name: "Bodysuit Bayi Motif Bunga Premium", price: 68000, oldPrice: 88000, category: "baju", emoji: "👚", rating: 4.8, desc: "Bodysuit dengan kancing snap mudah dibuka. Bahan katun bambu super lembut." },
-  { id: 8, name: "Selimut Bayi Double Fleece Ultra Soft", price: 95000, oldPrice: 125000, category: "aksesoris", emoji: "🛏️", rating: 4.9, desc: "Selimut double fleece super lembut, hangat, dan tidak membuat bayi kepanasan." },
-  { id: 9, name: "Celana Pop Bayi Set 3pcs Warna Pastel", price: 89000, oldPrice: 115000, category: "celana", emoji: "🩳", rating: 4.6, desc: "Paket 3 celana pop dengan warna pastel lucu. Bahan adem dan nyaman." },
-  { id: 10, name: "Minyak Telon Plus Anti Kembung 100ml", price: 45000, oldPrice: 55000, category: "perawatan", emoji: "💧", rating: 4.9, desc: "Minyak telon dengan aroma lavender, hangat dan membantu meredakan kembung." },
-  { id: 11, name: "Boneka Baby Rattle Genggam Lucu", price: 55000, oldPrice: 75000, category: "mainan", emoji: "🐻", rating: 4.7, desc: "Boneka rattle genggam dengan suara lembut, membantu stimulasi pendengaran." },
-  { id: 12, name: "Sandal Bayi Karakter Lucu Import", price: 65000, oldPrice: 85000, category: "sepatu", emoji: "🩴", rating: 4.6, desc: "Sandal karakter lucu dengan bahan karet lembut, tidak licin." },
+// ========== DATA DEFAULT ==========
+const DEFAULT_PRODUCTS = [
+  { id: 1, name: "Baju Bayi Lengan Panjang Katun Premium", price: 75000, oldPrice: 95000, category: "baju", emoji: "👕", rating: 4.8, stock: 50, desc: "Bahan katun 100% lembut, aman untuk kulit sensitif bayi. Tersedia ukuran 0-24 bulan." },
+  { id: 2, name: "Celana Joger Bayi Lucu Motif Hewan", price: 55000, oldPrice: 70000, category: "celana", emoji: "👖", rating: 4.7, stock: 30, desc: "Celana joger elastis dengan motif hewan menggemaskan. Nyaman untuk aktivitas bayi." },
+  { id: 3, name: "Topi Bayi Rajut Import Premium", price: 35000, oldPrice: 45000, category: "aksesoris", emoji: "🧢", rating: 4.9, stock: 40, desc: "Topi rajut lembut, hangat, dan stylish. Cocok untuk newborn hingga 12 bulan." },
+  { id: 4, name: "Sabun Mandi Bayi Organik 500ml", price: 65000, oldPrice: 85000, category: "perawatan", emoji: "🧴", rating: 4.8, stock: 25, desc: "Sabun organik dengan formula lembut, bebas SLS dan paraben. Aman untuk kulit bayi." },
+  { id: 5, name: "Mainan Edukasi Rattle Set 5in1", price: 120000, oldPrice: 150000, category: "mainan", emoji: "🧸", rating: 4.9, stock: 15, desc: "Set mainan rattle edukatif untuk stimulasi sensorik dan motorik bayi." },
+  { id: 6, name: "Sepatu Bayi Soft Sole Anti Slip", price: 85000, oldPrice: 110000, category: "sepatu", emoji: "👟", rating: 4.7, stock: 20, desc: "Sepatu soft sole dengan anti slip, melindungi kaki bayi saat belajar berjalan." },
+  { id: 7, name: "Bodysuit Bayi Motif Bunga Premium", price: 68000, oldPrice: 88000, category: "baju", emoji: "👚", rating: 4.8, stock: 35, desc: "Bodysuit dengan kancing snap mudah dibuka. Bahan katun bambu super lembut." },
+  { id: 8, name: "Selimut Bayi Double Fleece Ultra Soft", price: 95000, oldPrice: 125000, category: "aksesoris", emoji: "🛏️", rating: 4.9, stock: 18, desc: "Selimut double fleece super lembut, hangat, dan tidak membuat bayi kepanasan." },
+  { id: 9, name: "Celana Pop Bayi Set 3pcs Warna Pastel", price: 89000, oldPrice: 115000, category: "celana", emoji: "🩳", rating: 4.6, stock: 22, desc: "Paket 3 celana pop dengan warna pastel lucu. Bahan adem dan nyaman." },
+  { id: 10, name: "Minyak Telon Plus Anti Kembung 100ml", price: 45000, oldPrice: 55000, category: "perawatan", emoji: "💧", rating: 4.9, stock: 60, desc: "Minyak telon dengan aroma lavender, hangat dan membantu meredakan kembung." },
+  { id: 11, name: "Boneka Baby Rattle Genggam Lucu", price: 55000, oldPrice: 75000, category: "mainan", emoji: "🐻", rating: 4.7, stock: 28, desc: "Boneka rattle genggam dengan suara lembut, membantu stimulasi pendengaran." },
+  { id: 12, name: "Sandal Bayi Karakter Lucu Import", price: 65000, oldPrice: 85000, category: "sepatu", emoji: "🩴", rating: 4.6, stock: 32, desc: "Sandal karakter lucu dengan bahan karet lembut, tidak licin." },
 ];
 
+// ========== INIT STORAGE ==========
+function getProducts() {
+  const stored = localStorage.getItem('products');
+  if (!stored) {
+    localStorage.setItem('products', JSON.stringify(DEFAULT_PRODUCTS));
+    return DEFAULT_PRODUCTS;
+  }
+  return JSON.parse(stored);
+}
+
 // ========== STATE ==========
+let products = getProducts();
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
 let currentCategory = 'all';
 let searchQuery = '';
+let pendingOrder = null;
 
-// ========== RENDER PRODUK ==========
+// ========== RENDER ==========
 function renderProducts() {
+  products = getProducts();
   const grid = document.getElementById('productGrid');
   let filtered = products;
-  if (currentCategory !== 'all') {
-    filtered = filtered.filter(p => p.category === currentCategory);
-  }
-  if (searchQuery) {
-    filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
-  }
+  if (currentCategory !== 'all') filtered = filtered.filter(p => p.category === currentCategory);
+  if (searchQuery) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="empty" style="grid-column: 1/-1"><div class="emoji">🔍</div><p>Produk tidak ditemukan</p></div>';
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="emoji">🔍</div><p>Produk tidak ditemukan</p></div>';
     return;
   }
   grid.innerHTML = filtered.map(p => `
@@ -483,18 +481,19 @@ function renderProducts() {
       </div>
       <div class="product-info">
         <div class="product-name">${p.name}</div>
-        <div class="product-rating">⭐ ${p.rating} (${Math.floor(Math.random()*100)+20})</div>
+        <div class="product-rating">⭐ ${p.rating} | Stok: ${p.stock}</div>
         <div class="product-price">
           Rp ${p.price.toLocaleString('id-ID')}
           <span class="old">Rp ${p.oldPrice.toLocaleString('id-ID')}</span>
         </div>
-        <button class="btn-add" onclick="addToCart(${p.id})">+ Keranjang</button>
+        <button class="btn-add" onclick="addToCart(${p.id})" ${p.stock <= 0 ? 'disabled style="background:#ccc"' : ''}>
+          ${p.stock <= 0 ? '❌ Stok Habis' : '+ Keranjang'}
+        </button>
       </div>
     </div>
   `).join('');
 }
 
-// ========== FILTER & SEARCH ==========
 function filterCategory(cat, btn) {
   currentCategory = cat;
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -505,31 +504,28 @@ function searchProducts() {
   searchQuery = document.getElementById('searchInput').value;
   renderProducts();
 }
-function scrollToProducts() {
-  document.getElementById('productsTitle').scrollIntoView({ behavior: 'smooth' });
-}
+function scrollToProducts() { document.getElementById('productsTitle').scrollIntoView({ behavior: 'smooth' }); }
 
 // ========== CART ==========
 function addToCart(id) {
+  products = getProducts();
+  const p = products.find(x => x.id === id);
+  if (!p || p.stock <= 0) return showToast('❌ Stok habis');
   const item = cart.find(c => c.id === id);
   if (item) item.qty++;
   else cart.push({ id, qty: 1 });
   saveCart();
-  showToast('✅ Produk ditambahkan ke keranjang');
+  showToast('✅ Ditambahkan ke keranjang');
   updateBadges();
 }
-function saveCart() {
-  localStorage.setItem('cart', JSON.stringify(cart));
-}
+function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
 function updateBadges() {
   document.getElementById('cartBadge').textContent = cart.reduce((a,b) => a+b.qty, 0);
   document.getElementById('wishBadge').textContent = wishlist.length;
 }
-function openCart() {
-  renderCart();
-  openModal('cartModal');
-}
+function openCart() { renderCart(); openModal('cartModal'); }
 function renderCart() {
+  products = getProducts();
   const items = document.getElementById('cartItems');
   const footer = document.getElementById('cartFooter');
   if (cart.length === 0) {
@@ -539,6 +535,7 @@ function renderCart() {
   }
   items.innerHTML = cart.map(c => {
     const p = products.find(x => x.id === c.id);
+    if (!p) return '';
     return `
       <div class="cart-item">
         <div class="cart-item-img">${p.emoji}</div>
@@ -555,12 +552,12 @@ function renderCart() {
       </div>
     `;
   }).join('');
-  const total = cart.reduce((s,c) => s + products.find(x=>x.id===c.id).price * c.qty, 0);
+  const total = cart.reduce((s,c) => {
+    const p = products.find(x=>x.id===c.id);
+    return s + (p ? p.price * c.qty : 0);
+  }, 0);
   footer.innerHTML = `
-    <div class="cart-total">
-      <span>Total:</span>
-      <span>Rp ${total.toLocaleString('id-ID')}</span>
-    </div>
+    <div class="cart-total"><span>Total:</span><span>Rp ${total.toLocaleString('id-ID')}</span></div>
     <button class="checkout-btn" onclick="openCheckout()">Lanjut Checkout →</button>
   `;
 }
@@ -569,36 +566,87 @@ function changeQty(id, delta) {
   if (!item) return;
   item.qty += delta;
   if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
-  saveCart();
-  renderCart();
-  updateBadges();
+  saveCart(); renderCart(); updateBadges();
 }
 function removeFromCart(id) {
   cart = cart.filter(c => c.id !== id);
-  saveCart();
-  renderCart();
-  updateBadges();
+  saveCart(); renderCart(); updateBadges();
   showToast('🗑️ Produk dihapus');
 }
 
 // ========== CHECKOUT ==========
 function openCheckout() {
   if (cart.length === 0) return showToast('❌ Keranjang kosong');
-  const total = cart.reduce((s,c) => s + products.find(x=>x.id===c.id).price * c.qty, 0);
+  const total = cart.reduce((s,c) => {
+    const p = products.find(x=>x.id===c.id);
+    return s + (p ? p.price * c.qty : 0);
+  }, 0);
   document.getElementById('checkoutTotal').textContent = 'Rp ' + total.toLocaleString('id-ID');
   closeModal('cartModal');
   openModal('checkoutModal');
 }
 function processCheckout(e) {
   e.preventDefault();
-  const total = cart.reduce((s,c) => s + products.find(x=>x.id===c.id).price * c.qty, 0);
+  const total = cart.reduce((s,c) => {
+    const p = products.find(x=>x.id===c.id);
+    return s + (p ? p.price * c.qty : 0);
+  }, 0);
   const orderId = 'BC' + Date.now().toString().slice(-8);
-  alert(`🎉 PESANAN BERHASIL!\n\n📋 No. Pesanan: ${orderId}\n👤 Nama: ${document.getElementById('custName').value}\n📞 HP: ${document.getElementById('custPhone').value}\n📍 Alamat: ${document.getElementById('custAddress').value}, ${document.getElementById('custCity').value}\n💳 Pembayaran: ${document.getElementById('paymentMethod').value}\n💰 Total: Rp ${total.toLocaleString('id-ID')}\n\nTerima kasih telah berbelanja di BabyCare Shop! ❤️`);
+  pendingOrder = {
+    id: orderId,
+    customer: document.getElementById('custName').value,
+    phone: document.getElementById('custPhone').value,
+    address: document.getElementById('custAddress').value,
+    city: document.getElementById('custCity').value,
+    note: document.getElementById('custNote').value,
+    items: cart.map(c => {
+      const p = products.find(x => x.id === c.id);
+      return { id: c.id, name: p.name, price: p.price, qty: c.qty, emoji: p.emoji };
+    }),
+    total: total,
+    status: 'Menunggu Pembayaran',
+    date: new Date().toISOString(),
+    payment: 'QRIS'
+  };
+  // Show QRIS modal
+  document.getElementById('qrisAmount').textContent = 'Rp ' + total.toLocaleString('id-ID');
+  document.getElementById('qrisOrderId').textContent = orderId;
+  document.getElementById('qrisCustName').textContent = pendingOrder.customer;
+  document.getElementById('qrisCustPhone').textContent = pendingOrder.phone;
+  closeModal('checkoutModal');
+  openModal('qrisModal');
+}
+
+function confirmPayment() {
+  if (!pendingOrder) return;
+  pendingOrder.status = 'Sudah Dibayar';
+  // Save order
+  const orders = JSON.parse(localStorage.getItem('orders')) || [];
+  orders.push(pendingOrder);
+  localStorage.setItem('orders', JSON.stringify(orders));
+  // Reduce stock
+  products = getProducts();
+  pendingOrder.items.forEach(item => {
+    const p = products.find(x => x.id === item.id);
+    if (p) p.stock = Math.max(0, p.stock - item.qty);
+  });
+  localStorage.setItem('products', JSON.stringify(products));
+  // Clear cart
   cart = [];
   saveCart();
   updateBadges();
-  closeModal('checkoutModal');
+  closeModal('qrisModal');
   document.querySelector('#checkoutModal form').reset();
+  alert(`🎉 PEMBAYARAN BERHASIL!\n\n📋 No. Pesanan: ${pendingOrder.id}\n👤 Nama: ${pendingOrder.customer}\n💰 Total: Rp ${pendingOrder.total.toLocaleString('id-ID')}\n📱 Metode: QRIS\n\n✅ Pesanan sedang diproses.\nTerima kasih telah berbelanja di BabyCare Shop! ❤️`);
+  pendingOrder = null;
+  renderProducts();
+}
+
+function cancelPayment() {
+  if (!confirm('Yakin ingin membatalkan pembayaran?')) return;
+  pendingOrder = null;
+  closeModal('qrisModal');
+  showToast('❌ Pembayaran dibatalkan');
 }
 
 // ========== WISHLIST ==========
@@ -615,12 +663,14 @@ function toggleWishlist(id) {
   renderProducts();
 }
 function openWishlist() {
+  products = getProducts();
   const container = document.getElementById('wishlistItems');
   if (wishlist.length === 0) {
     container.innerHTML = '<div class="empty"><div class="emoji">💔</div><p>Wishlist masih kosong</p></div>';
   } else {
     container.innerHTML = wishlist.map(id => {
       const p = products.find(x => x.id === id);
+      if (!p) return '';
       return `
         <div class="cart-item">
           <div class="cart-item-img">${p.emoji}</div>
@@ -636,22 +686,25 @@ function openWishlist() {
   openModal('wishlistModal');
 }
 
-// ========== DETAIL PRODUK ==========
+// ========== DETAIL ==========
 function showDetail(id) {
+  products = getProducts();
   const p = products.find(x => x.id === id);
+  if (!p) return;
   document.getElementById('detailContent').innerHTML = `
     <div class="detail-grid">
       <div class="detail-img">${p.emoji}</div>
       <div class="detail-info">
         <h2>${p.name}</h2>
-        <div class="product-rating">⭐ ${p.rating} | Terjual ${Math.floor(Math.random()*500)+50}</div>
+        <div class="product-rating">⭐ ${p.rating} | Stok: ${p.stock}</div>
         <div class="price">Rp ${p.price.toLocaleString('id-ID')}</div>
         <p>${p.desc}</p>
         <div style="margin:20px 0">
-          <p><strong>Stok:</strong> Tersedia</p>
           <p><strong>Kategori:</strong> ${p.category}</p>
         </div>
-        <button class="checkout-btn" onclick="addToCart(${p.id}); closeModal('detailModal')">🛒 Tambah ke Keranjang</button>
+        <button class="checkout-btn" onclick="addToCart(${p.id}); closeModal('detailModal')" ${p.stock <= 0 ? 'disabled style="background:#ccc"' : ''}>
+          ${p.stock <= 0 ? '❌ Stok Habis' : '🛒 Tambah ke Keranjang'}
+        </button>
       </div>
     </div>
   `;
@@ -666,16 +719,8 @@ function switchTab(type, btn) {
   document.getElementById('loginForm').style.display = type === 'login' ? 'block' : 'none';
   document.getElementById('registerForm').style.display = type === 'register' ? 'block' : 'none';
 }
-function doLogin(e) {
-  e.preventDefault();
-  showToast('✅ Berhasil masuk!');
-  closeModal('loginModal');
-}
-function doRegister(e) {
-  e.preventDefault();
-  showToast('🎉 Pendaftaran berhasil!');
-  closeModal('loginModal');
-}
+function doLogin(e) { e.preventDefault(); showToast('✅ Berhasil masuk!'); closeModal('loginModal'); }
+function doRegister(e) { e.preventDefault(); showToast('🎉 Pendaftaran berhasil!'); closeModal('loginModal'); }
 
 // ========== UTILS ==========
 function openModal(id) { document.getElementById(id).classList.add('active'); }
@@ -686,14 +731,14 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
-// Close modal on outside click
 document.querySelectorAll('.modal').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
 });
 
 // ========== INIT ==========
+products = getProducts();
 renderProducts();
 updateBadges();
 </script>
 </body>
-      </html>
+</html>
