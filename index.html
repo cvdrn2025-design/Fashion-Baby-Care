@@ -15,7 +15,6 @@
   }
   body { background: var(--light); color: var(--dark); }
 
-  /* HEADER */
   header {
     background: white;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
@@ -27,10 +26,7 @@
   }
   .logo { font-size: 24px; font-weight: bold; color: var(--primary); white-space: nowrap; }
   .logo span { color: var(--dark); }
-  .search-bar {
-    flex: 1; min-width: 200px; max-width: 700px;
-    position: relative;
-  }
+  .search-bar { flex: 1; min-width: 200px; max-width: 700px; position: relative; }
   .search-bar input {
     width: 100%; padding: 12px 50px 12px 20px; border: 2px solid #eee;
     border-radius: 30px; outline: none; transition: .3s; font-size: 14px;
@@ -39,13 +35,10 @@
   .search-bar button {
     position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
     background: var(--primary); color: white; border: none;
-    padding: 8px 16px; border-radius: 25px; cursor: pointer;
-    font-size: 14px;
+    padding: 8px 16px; border-radius: 25px; cursor: pointer; font-size: 14px;
   }
   .nav-icons { display: flex; gap: 20px; align-items: center; }
-  .nav-icons .icon {
-    position: relative; cursor: pointer; font-size: 22px; transition: .3s;
-  }
+  .nav-icons .icon { position: relative; cursor: pointer; font-size: 22px; transition: .3s; }
   .nav-icons .icon:hover { transform: scale(1.15); }
   .badge {
     position: absolute; top: -8px; right: -10px;
@@ -53,11 +46,9 @@
     padding: 2px 6px; border-radius: 10px; font-weight: bold;
   }
 
-  /* KATEGORI */
   .categories {
     display: flex; gap: 15px; padding: 20px 5%; overflow-x: auto;
-    max-width: 1400px; margin: auto;
-    scrollbar-width: thin;
+    max-width: 1400px; margin: auto; scrollbar-width: thin;
   }
   .categories::-webkit-scrollbar { height: 6px; }
   .categories::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
@@ -70,7 +61,6 @@
     background: var(--primary); color: white; border-color: var(--primary);
   }
 
-  /* HERO */
   .hero {
     background: linear-gradient(135deg, #ffd6e7, #ffe9f2);
     padding: 50px 5%; text-align: center; border-radius: 20px;
@@ -86,7 +76,6 @@
   }
   .hero button:hover { background: #e5517f; transform: translateY(-2px); }
 
-  /* PRODUK GRID */
   .section-title { text-align: center; margin: 40px 0 20px; font-size: 28px; }
   .section-title span { color: var(--primary); }
   .products {
@@ -104,16 +93,14 @@
     font-size: 70px; position: relative; overflow: hidden;
   }
   .product-img img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform .4s;
+    width: 100%; height: 100%; object-fit: cover; transition: transform .4s;
   }
   .product-card:hover .product-img img { transform: scale(1.05); }
   .wishlist-btn {
     position: absolute; top: 10px; right: 10px;
     background: white; border: none; width: 38px; height: 38px;
     border-radius: 50%; cursor: pointer; font-size: 18px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: .3s;
-    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: .3s; z-index: 2;
   }
   .wishlist-btn.active { background: var(--primary); }
   .wishlist-btn:hover { transform: scale(1.1); }
@@ -137,7 +124,6 @@
   .btn-add:hover { background: #e5517f; }
   .btn-add:disabled { background: #ccc; cursor: not-allowed; }
 
-  /* MODAL */
   .modal {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.5); z-index: 1000;
@@ -193,13 +179,11 @@
   .checkout-btn {
     width: 100%; background: var(--primary); color: white;
     border: none; padding: 15px; border-radius: 12px;
-    font-size: 16px; font-weight: bold; cursor: pointer;
-    transition: .3s;
+    font-size: 16px; font-weight: bold; cursor: pointer; transition: .3s;
   }
   .checkout-btn:hover { background: #e5517f; }
   .checkout-btn:disabled { background: #ccc; cursor: not-allowed; }
 
-  /* FORM */
   .form-group { margin-bottom: 15px; }
   .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
   .form-group input, .form-group textarea, .form-group select {
@@ -208,23 +192,17 @@
   }
   .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--primary); }
 
-  /* DETAIL PRODUK */
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
   .detail-img {
     background: var(--secondary); border-radius: 15px;
     height: 350px; display: flex; align-items: center;
-    justify-content: center; font-size: 120px;
-    overflow: hidden;
+    justify-content: center; font-size: 120px; overflow: hidden;
   }
-  .detail-img img {
-    width: 100%; height: 100%; object-fit: cover;
-    border-radius: 15px;
-  }
+  .detail-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
   .detail-info h2 { margin-bottom: 15px; font-size: 22px; }
   .detail-info .price { font-size: 28px; color: var(--primary); margin: 15px 0; font-weight: bold; }
   .detail-info p { color: #666; line-height: 1.6; margin-bottom: 15px; }
 
-  /* QRIS */
   .qris-box {
     background: linear-gradient(135deg, #fff5f9, #ffe9f2);
     border: 2px dashed var(--primary);
@@ -234,42 +212,30 @@
     font-weight: bold; color: var(--primary); font-size: 18px; margin-bottom: 15px;
   }
   .qris-qr {
-    border-radius: 12px;
-    max-width: 260px;
-    margin: 0 auto;
-    display: block;
-    background: white;
-    padding: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-radius: 12px; max-width: 260px; margin: 0 auto; display: block;
+    background: white; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
-  .qris-box .qris-note {
-    font-size: 13px; color: #666; margin-top: 12px; line-height: 1.5;
-  }
+  .qris-box .qris-note { font-size: 13px; color: #666; margin-top: 12px; line-height: 1.5; }
   .qris-amount {
     background: var(--primary); color: white;
     padding: 12px 25px; border-radius: 30px;
-    display: inline-block; font-weight: bold; font-size: 20px;
-    margin: 15px 0;
+    display: inline-block; font-weight: bold; font-size: 20px; margin: 15px 0;
   }
 
-  /* TOAST */
   .toast {
     position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(100px);
     background: var(--success); color: white;
     padding: 14px 30px; border-radius: 30px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-    transition: .4s; opacity: 0; z-index: 2000;
-    font-weight: 600;
+    transition: .4s; opacity: 0; z-index: 2000; font-weight: 600;
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   .toast.error { background: #e74c3c; }
 
-  /* EMPTY STATE */
   .empty { text-align: center; padding: 40px; color: #999; }
   .empty .emoji { font-size: 60px; margin-bottom: 15px; }
 
-  /* LOGIN TABS */
   .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
   .tab {
     flex: 1; padding: 12px; border: 2px solid #eee;
@@ -277,14 +243,12 @@
   }
   .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-  /* FOOTER */
   footer {
     background: #333; color: white; padding: 40px 5%;
     margin-top: 60px; text-align: center;
   }
   footer p { color: #aaa; margin-top: 10px; }
 
-  /* ORDER INFO BOX */
   .order-info-box {
     background: #fff9e6; padding: 15px; border-radius: 10px;
     margin: 15px 0; font-size: 13px; color: #666; line-height: 1.8;
@@ -292,7 +256,26 @@
   .order-info-box b { color: #333; }
   .order-info-box .highlight { color: var(--primary); font-weight: bold; }
 
-  /* RESPONSIVE */
+  /* Loading overlay */
+  .loading-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(255,255,255,0.8);
+    z-index: 3000;
+    justify-content: center; align-items: center;
+    flex-direction: column; gap: 15px;
+  }
+  .loading-overlay.active { display: flex; }
+  .spinner {
+    width: 50px; height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-overlay p { color: var(--primary); font-weight: 600; }
+
   @media (max-width: 768px) {
     .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 4%; }
     .search-bar { order: 3; width: 100%; margin: 5px 0 0; max-width: 100%; }
@@ -311,6 +294,12 @@
 </style>
 </head>
 <body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p id="loadingText">Memuat produk...</p>
+</div>
 
 <!-- HEADER -->
 <header>
@@ -480,49 +469,45 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script>
-// ========== DATA DEFAULT ==========
-const DEFAULT_PRODUCTS = [
-  { id: 1, name: "Baju Bayi Lengan Panjang Katun Premium", price: 75000, oldPrice: 95000, category: "baju", emoji: "👕", image: "", rating: 4.8, stock: 50, desc: "Bahan katun 100% lembut, aman untuk kulit sensitif bayi. Tersedia ukuran 0-24 bulan." },
-  { id: 2, name: "Celana Joger Bayi Lucu Motif Hewan", price: 55000, oldPrice: 70000, category: "celana", emoji: "👖", image: "", rating: 4.7, stock: 30, desc: "Celana joger elastis dengan motif hewan menggemaskan. Nyaman untuk aktivitas bayi." },
-  { id: 3, name: "Topi Bayi Rajut Import Premium", price: 35000, oldPrice: 45000, category: "aksesoris", emoji: "🧢", image: "", rating: 4.9, stock: 40, desc: "Topi rajut lembut, hangat, dan stylish. Cocok untuk newborn hingga 12 bulan." },
-  { id: 4, name: "Sabun Mandi Bayi Organik 500ml", price: 65000, oldPrice: 85000, category: "perawatan", emoji: "🧴", image: "", rating: 4.8, stock: 25, desc: "Sabun organik dengan formula lembut, bebas SLS dan paraben. Aman untuk kulit bayi." },
-  { id: 5, name: "Mainan Edukasi Rattle Set 5in1", price: 120000, oldPrice: 150000, category: "mainan", emoji: "🧸", image: "", rating: 4.9, stock: 15, desc: "Set mainan rattle edukatif untuk stimulasi sensorik dan motorik bayi." },
-  { id: 6, name: "Sepatu Bayi Soft Sole Anti Slip", price: 85000, oldPrice: 110000, category: "sepatu", emoji: "👟", image: "", rating: 4.7, stock: 20, desc: "Sepatu soft sole dengan anti slip, melindungi kaki bayi saat belajar berjalan." },
-  { id: 7, name: "Bodysuit Bayi Motif Bunga Premium", price: 68000, oldPrice: 88000, category: "baju", emoji: "👚", image: "", rating: 4.8, stock: 35, desc: "Bodysuit dengan kancing snap mudah dibuka. Bahan katun bambu super lembut." },
-  { id: 8, name: "Selimut Bayi Double Fleece Ultra Soft", price: 95000, oldPrice: 125000, category: "aksesoris", emoji: "🛏️", image: "", rating: 4.9, stock: 18, desc: "Selimut double fleece super lembut, hangat, dan tidak membuat bayi kepanasan." },
-  { id: 9, name: "Celana Pop Bayi Set 3pcs Warna Pastel", price: 89000, oldPrice: 115000, category: "celana", emoji: "🩳", image: "", rating: 4.6, stock: 22, desc: "Paket 3 celana pop dengan warna pastel lucu. Bahan adem dan nyaman." },
-  { id: 10, name: "Minyak Telon Plus Anti Kembung 100ml", price: 45000, oldPrice: 55000, category: "perawatan", emoji: "💧", image: "", rating: 4.9, stock: 60, desc: "Minyak telon dengan aroma lavender, hangat dan membantu meredakan kembung." },
-  { id: 11, name: "Boneka Baby Rattle Genggam Lucu", price: 55000, oldPrice: 75000, category: "mainan", emoji: "🐻", image: "", rating: 4.7, stock: 28, desc: "Boneka rattle genggam dengan suara lembut, membantu stimulasi pendengaran." },
-  { id: 12, name: "Sandal Bayi Karakter Lucu Import", price: 65000, oldPrice: 85000, category: "sepatu", emoji: "🩴", image: "", rating: 4.6, stock: 32, desc: "Sandal karakter lucu dengan bahan karet lembut, tidak licin." },
-];
-
-// ========== STORAGE HELPERS ==========
-function getProducts() {
-  const stored = localStorage.getItem('products');
-  if (!stored) {
-    localStorage.setItem('products', JSON.stringify(DEFAULT_PRODUCTS));
-    return DEFAULT_PRODUCTS;
-  }
-  try {
-    return JSON.parse(stored);
-  } catch (e) {
-    console.error('Error parsing products:', e);
-    return DEFAULT_PRODUCTS;
-  }
-}
+<script type="module">
+// ========== IMPORT FIREBASE HELPERS ==========
+import { 
+  fbGetProducts, fbAddOrder, fbUpdateProduct 
+} from './firebase-config.js';
 
 // ========== STATE ==========
-let products = getProducts();
+let products = [];
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
 let currentCategory = 'all';
 let searchQuery = '';
 let pendingOrder = null;
 
+// ========== LOADING ==========
+function showLoading(text = 'Memuat...') {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+// ========== LOAD PRODUCTS FROM FIREBASE ==========
+async function loadProducts() {
+  try {
+    showLoading('Memuat produk...');
+    products = await fbGetProducts();
+    renderProducts();
+  } catch (err) {
+    console.error('Error loading products:', err);
+    showToast('❌ Gagal memuat produk dari server', true);
+  } finally {
+    hideLoading();
+  }
+}
+
 // ========== RENDER PRODUK ==========
 function renderProducts() {
-  products = getProducts();
   const grid = document.getElementById('productGrid');
   let filtered = products;
   
@@ -545,10 +530,10 @@ function renderProducts() {
     
     return `
       <div class="product-card">
-        <div class="product-img" onclick="showDetail(${p.id})" style="cursor:pointer">
+        <div class="product-img" onclick="showDetail('${p.id}')" style="cursor:pointer">
           ${imgHTML}
           <button class="wishlist-btn ${wishlist.includes(p.id) ? 'active' : ''}" 
-                  onclick="event.stopPropagation(); toggleWishlist(${p.id})">
+                  onclick="event.stopPropagation(); toggleWishlist('${p.id}')">
             ${wishlist.includes(p.id) ? '❤️' : '🤍'}
           </button>
         </div>
@@ -559,7 +544,7 @@ function renderProducts() {
             Rp ${p.price.toLocaleString('id-ID')}
             ${p.oldPrice ? `<span class="old">Rp ${p.oldPrice.toLocaleString('id-ID')}</span>` : ''}
           </div>
-          <button class="btn-add" onclick="addToCart(${p.id})" ${p.stock <= 0 ? 'disabled' : ''}>
+          <button class="btn-add" onclick="addToCart('${p.id}')" ${p.stock <= 0 ? 'disabled' : ''}>
             ${p.stock <= 0 ? '❌ Stok Habis' : '+ Keranjang'}
           </button>
         </div>
@@ -587,7 +572,6 @@ function scrollToProducts() {
 
 // ========== CART ==========
 function addToCart(id) {
-  products = getProducts();
   const p = products.find(x => x.id === id);
   if (!p || p.stock <= 0) return showToast('❌ Stok habis', true);
   
@@ -619,7 +603,6 @@ function openCart() {
 }
 
 function renderCart() {
-  products = getProducts();
   const items = document.getElementById('cartItems');
   const footer = document.getElementById('cartFooter');
   
@@ -644,10 +627,10 @@ function renderCart() {
           <h4>${p.name}</h4>
           <p>Rp ${(p.price * c.qty).toLocaleString('id-ID')}</p>
           <div class="qty-control">
-            <button onclick="changeQty(${c.id}, -1)">−</button>
+            <button onclick="changeQty('${c.id}', -1)">−</button>
             <span>${c.qty}</span>
-            <button onclick="changeQty(${c.id}, 1)">+</button>
-            <button class="remove-btn" onclick="removeFromCart(${c.id})">Hapus</button>
+            <button onclick="changeQty('${c.id}', 1)">+</button>
+            <button class="remove-btn" onclick="removeFromCart('${c.id}')">Hapus</button>
           </div>
         </div>
       </div>
@@ -716,7 +699,7 @@ function processCheckout(e) {
   const orderId = 'BC' + Date.now().toString().slice(-8);
   
   pendingOrder = {
-    id: orderId,
+    orderId: orderId,
     customer: document.getElementById('custName').value,
     phone: document.getElementById('custPhone').value,
     address: document.getElementById('custAddress').value,
@@ -734,8 +717,7 @@ function processCheckout(e) {
       };
     }),
     total: total,
-    status: 'Menunggu Pembayaran',
-    date: new Date().toISOString(),
+    status: 'Sudah Dibayar',
     payment: 'QRIS'
   };
   
@@ -748,35 +730,45 @@ function processCheckout(e) {
   openModal('qrisModal');
 }
 
-function confirmPayment() {
+async function confirmPayment() {
   if (!pendingOrder) return;
   
-  pendingOrder.status = 'Sudah Dibayar';
-  
-  const orders = JSON.parse(localStorage.getItem('orders')) || [];
-  orders.push(pendingOrder);
-  localStorage.setItem('orders', JSON.stringify(orders));
-  
-  products = getProducts();
-  pendingOrder.items.forEach(item => {
-    const p = products.find(x => x.id === item.id);
-    if (p) p.stock = Math.max(0, p.stock - item.qty);
-  });
-  localStorage.setItem('products', JSON.stringify(products));
-  
-  cart = [];
-  saveCart();
-  updateBadges();
-  
-  closeModal('qrisModal');
-  document.querySelector('#checkoutModal form').reset();
-  
-  const orderInfo = pendingOrder;
-  pendingOrder = null;
-  
-  alert(`🎉 PEMBAYARAN BERHASIL!\n\n📋 No. Pesanan: ${orderInfo.id}\n👤 Nama: ${orderInfo.customer}\n💰 Total: Rp ${orderInfo.total.toLocaleString('id-ID')}\n📱 Metode: QRIS\n\n✅ Pesanan sedang diproses.\nTerima kasih telah berbelanja di BabyCare Shop! ❤️`);
-  
-  renderProducts();
+  try {
+    showLoading('Memproses pesanan...');
+    
+    // Simpan order ke Firebase
+    await fbAddOrder(pendingOrder);
+    
+    // Update stok produk di Firebase
+    for (const item of pendingOrder.items) {
+      const p = products.find(x => x.id === item.id);
+      if (p) {
+        await fbUpdateProduct(item.id, { stock: Math.max(0, p.stock - item.qty) });
+      }
+    }
+    
+    // Reload products
+    products = await fbGetProducts();
+    
+    cart = [];
+    saveCart();
+    updateBadges();
+    
+    closeModal('qrisModal');
+    document.querySelector('#checkoutModal form').reset();
+    
+    const orderInfo = pendingOrder;
+    pendingOrder = null;
+    
+    hideLoading();
+    alert(`🎉 PEMBAYARAN BERHASIL!\n\n📋 No. Pesanan: ${orderInfo.orderId}\n👤 Nama: ${orderInfo.customer}\n💰 Total: Rp ${orderInfo.total.toLocaleString('id-ID')}\n📱 Metode: QRIS\n\n✅ Pesanan sedang diproses.\nTerima kasih telah berbelanja di BabyCare Shop! ❤️`);
+    
+    renderProducts();
+  } catch (err) {
+    hideLoading();
+    console.error('Error saving order:', err);
+    showToast('❌ Gagal menyimpan pesanan: ' + err.message, true);
+  }
 }
 
 function cancelPayment() {
@@ -801,7 +793,6 @@ function toggleWishlist(id) {
 }
 
 function openWishlist() {
-  products = getProducts();
   const container = document.getElementById('wishlistItems');
   
   if (wishlist.length === 0) {
@@ -823,7 +814,7 @@ function openWishlist() {
             <p>Rp ${p.price.toLocaleString('id-ID')}</p>
           </div>
           <button class="btn-add" style="width:auto;padding:8px 15px" 
-                  onclick="addToCart(${p.id}); closeModal('wishlistModal')">
+                  onclick="addToCart('${p.id}'); closeModal('wishlistModal')">
             + Keranjang
           </button>
         </div>
@@ -835,7 +826,6 @@ function openWishlist() {
 
 // ========== DETAIL PRODUK ==========
 function showDetail(id) {
-  products = getProducts();
   const p = products.find(x => x.id === id);
   if (!p) return;
   
@@ -859,7 +849,7 @@ function showDetail(id) {
           <p><strong>Status:</strong> ${p.stock > 0 ? '✅ Tersedia' : '❌ Stok Habis'}</p>
         </div>
         <button class="checkout-btn" 
-                onclick="addToCart(${p.id}); closeModal('detailModal')" 
+                onclick="addToCart('${p.id}'); closeModal('detailModal')" 
                 ${p.stock <= 0 ? 'disabled' : ''}>
           ${p.stock <= 0 ? '❌ Stok Habis' : '🛒 Tambah ke Keranjang'}
         </button>
@@ -927,16 +917,31 @@ document.addEventListener('keydown', e => {
   }
 });
 
-window.addEventListener('storage', (e) => {
-  if (e.key === 'products') {
-    products = getProducts();
-    renderProducts();
-  }
-});
+// ========== EXPOSE FUNCTIONS TO WINDOW (untuk onclick) ==========
+window.filterCategory = filterCategory;
+window.searchProducts = searchProducts;
+window.scrollToProducts = scrollToProducts;
+window.addToCart = addToCart;
+window.openCart = openCart;
+window.changeQty = changeQty;
+window.removeFromCart = removeFromCart;
+window.openCheckout = openCheckout;
+window.processCheckout = processCheckout;
+window.confirmPayment = confirmPayment;
+window.cancelPayment = cancelPayment;
+window.toggleWishlist = toggleWishlist;
+window.openWishlist = openWishlist;
+window.showDetail = showDetail;
+window.openLogin = openLogin;
+window.switchTab = switchTab;
+window.doLogin = doLogin;
+window.doRegister = doRegister;
+window.openModal = openModal;
+window.closeModal = closeModal;
 
 // ========== INIT ==========
-renderProducts();
+loadProducts();
 updateBadges();
 </script>
 </body>
- </html>
+</html>
