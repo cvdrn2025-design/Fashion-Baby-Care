@@ -15,6 +15,7 @@
   }
   body { background: var(--light); color: var(--dark); }
 
+  /* HEADER */
   header {
     background: white;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
@@ -46,6 +47,7 @@
     padding: 2px 6px; border-radius: 10px; font-weight: bold;
   }
 
+  /* KATEGORI */
   .categories {
     display: flex; gap: 15px; padding: 20px 5%; overflow-x: auto;
     max-width: 1400px; margin: auto; scrollbar-width: thin;
@@ -61,6 +63,7 @@
     background: var(--primary); color: white; border-color: var(--primary);
   }
 
+  /* HERO */
   .hero {
     background: linear-gradient(135deg, #ffd6e7, #ffe9f2);
     padding: 50px 5%; text-align: center; border-radius: 20px;
@@ -76,6 +79,7 @@
   }
   .hero button:hover { background: #e5517f; transform: translateY(-2px); }
 
+  /* PRODUK */
   .section-title { text-align: center; margin: 40px 0 20px; font-size: 28px; }
   .section-title span { color: var(--primary); }
   .products {
@@ -124,6 +128,7 @@
   .btn-add:hover { background: #e5517f; }
   .btn-add:disabled { background: #ccc; cursor: not-allowed; }
 
+  /* MODAL */
   .modal {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.5); z-index: 1000;
@@ -184,6 +189,7 @@
   .checkout-btn:hover { background: #e5517f; }
   .checkout-btn:disabled { background: #ccc; cursor: not-allowed; }
 
+  /* FORM */
   .form-group { margin-bottom: 15px; }
   .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
   .form-group input, .form-group textarea, .form-group select {
@@ -192,6 +198,7 @@
   }
   .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--primary); }
 
+  /* DETAIL */
   .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
   .detail-img {
     background: var(--secondary); border-radius: 15px;
@@ -203,6 +210,7 @@
   .detail-info .price { font-size: 28px; color: var(--primary); margin: 15px 0; font-weight: bold; }
   .detail-info p { color: #666; line-height: 1.6; margin-bottom: 15px; }
 
+  /* QRIS */
   .qris-box {
     background: linear-gradient(135deg, #fff5f9, #ffe9f2);
     border: 2px dashed var(--primary);
@@ -222,6 +230,7 @@
     display: inline-block; font-weight: bold; font-size: 20px; margin: 15px 0;
   }
 
+  /* TOAST */
   .toast {
     position: fixed; bottom: 30px; left: 50%;
     transform: translateX(-50%) translateY(100px);
@@ -233,9 +242,11 @@
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   .toast.error { background: #e74c3c; }
 
+  /* EMPTY */
   .empty { text-align: center; padding: 40px; color: #999; }
   .empty .emoji { font-size: 60px; margin-bottom: 15px; }
 
+  /* LOGIN TABS */
   .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
   .tab {
     flex: 1; padding: 12px; border: 2px solid #eee;
@@ -243,6 +254,7 @@
   }
   .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
 
+  /* FOOTER */
   footer {
     background: #333; color: white; padding: 40px 5%;
     margin-top: 60px; text-align: center;
@@ -256,13 +268,11 @@
   .order-info-box b { color: #333; }
   .order-info-box .highlight { color: var(--primary); font-weight: bold; }
 
-  /* Loading overlay */
+  /* LOADING */
   .loading-overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(255,255,255,0.8);
-    z-index: 3000;
-    justify-content: center; align-items: center;
+    display: none; position: fixed; inset: 0;
+    background: rgba(255,255,255,0.9);
+    z-index: 3000; justify-content: center; align-items: center;
     flex-direction: column; gap: 15px;
   }
   .loading-overlay.active { display: flex; }
@@ -270,11 +280,21 @@
     width: 50px; height: 50px;
     border: 4px solid #f3f3f3;
     border-top: 4px solid var(--primary);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    border-radius: 50%; animation: spin 1s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-overlay p { color: var(--primary); font-weight: 600; }
+
+  /* SKELETON */
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton 1.5s ease-in-out infinite;
+  }
+  @keyframes skeleton {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
 
   @media (max-width: 768px) {
     .navbar { flex-wrap: wrap; gap: 10px; padding: 12px 4%; }
@@ -365,30 +385,12 @@
     <button class="close-btn" onclick="closeModal('checkoutModal')">×</button>
     <h2>📦 Data Pengiriman</h2>
     <form onsubmit="processCheckout(event)">
-      <div class="form-group">
-        <label>Nama Lengkap *</label>
-        <input type="text" required id="custName" placeholder="Masukkan nama lengkap">
-      </div>
-      <div class="form-group">
-        <label>No. HP / WhatsApp *</label>
-        <input type="tel" required id="custPhone" placeholder="08xxxxxxxxxx">
-      </div>
-      <div class="form-group">
-        <label>Alamat Lengkap *</label>
-        <textarea rows="3" required id="custAddress" placeholder="Jalan, No. Rumah, RT/RW, Kelurahan, Kecamatan"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Kota *</label>
-        <input type="text" required id="custCity" placeholder="Nama kota">
-      </div>
-      <div class="form-group">
-        <label>Catatan (opsional)</label>
-        <textarea rows="2" id="custNote" placeholder="Catatan untuk penjual..."></textarea>
-      </div>
-      <div class="cart-total">
-        <span>Total Bayar:</span>
-        <span id="checkoutTotal">Rp 0</span>
-      </div>
+      <div class="form-group"><label>Nama Lengkap *</label><input type="text" required id="custName" placeholder="Masukkan nama lengkap"></div>
+      <div class="form-group"><label>No. HP / WhatsApp *</label><input type="tel" required id="custPhone" placeholder="08xxxxxxxxxx"></div>
+      <div class="form-group"><label>Alamat Lengkap *</label><textarea rows="3" required id="custAddress" placeholder="Jalan, No. Rumah, RT/RW, Kelurahan, Kecamatan"></textarea></div>
+      <div class="form-group"><label>Kota *</label><input type="text" required id="custCity" placeholder="Nama kota"></div>
+      <div class="form-group"><label>Catatan (opsional)</label><textarea rows="2" id="custNote" placeholder="Catatan untuk penjual..."></textarea></div>
+      <div class="cart-total"><span>Total Bayar:</span><span id="checkoutTotal">Rp 0</span></div>
       <button type="submit" class="checkout-btn">📱 Lanjut ke Pembayaran QRIS</button>
     </form>
   </div>
@@ -419,10 +421,7 @@
       <b>📞 HP:</b> <span id="qrisCustPhone"></span>
     </div>
     <button class="checkout-btn" onclick="confirmPayment()">✅ Saya Sudah Bayar</button>
-    <button onclick="cancelPayment()" 
-            style="width:100%;background:#eee;color:#666;border:none;padding:12px;border-radius:12px;margin-top:10px;cursor:pointer;font-weight:600;">
-      Batal
-    </button>
+    <button onclick="cancelPayment()" style="width:100%;background:#eee;color:#666;border:none;padding:12px;border-radius:12px;margin-top:10px;cursor:pointer;font-weight:600;">Batal</button>
   </div>
 </div>
 
@@ -470,10 +469,7 @@
 <div class="toast" id="toast"></div>
 
 <script type="module">
-// ========== IMPORT FIREBASE HELPERS ==========
-import { 
-  fbGetProducts, fbAddOrder, fbUpdateProduct 
-} from './firebase-config.js';
+import { fbGetProducts, fbAddOrder, fbUpdateProduct } from './firebase-config.js';
 
 // ========== STATE ==========
 let products = [];
@@ -492,17 +488,43 @@ function hideLoading() {
   document.getElementById('loadingOverlay').classList.remove('active');
 }
 
-// ========== LOAD PRODUCTS FROM FIREBASE ==========
+// ========== LOAD ==========
 async function loadProducts() {
+  const grid = document.getElementById('productGrid');
+  
+  // Skeleton loading
+  grid.innerHTML = Array(8).fill(0).map(() => `
+    <div class="product-card">
+      <div class="product-img skeleton"></div>
+      <div class="product-info">
+        <div class="skeleton" style="height:14px;border-radius:6px;margin-bottom:8px"></div>
+        <div class="skeleton" style="height:14px;width:60%;border-radius:6px;margin-bottom:12px"></div>
+        <div class="skeleton" style="height:24px;border-radius:8px"></div>
+      </div>
+    </div>
+  `).join('');
+  
   try {
-    showLoading('Memuat produk...');
     products = await fbGetProducts();
     renderProducts();
   } catch (err) {
     console.error('Error loading products:', err);
-    showToast('❌ Gagal memuat produk dari server', true);
-  } finally {
-    hideLoading();
+    grid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1">
+        <div class="emoji">⚠️</div>
+        <p style="font-weight:600;color:#e74c3c">Gagal memuat produk</p>
+        <p style="font-size:13px;margin-top:10px">${err.message}</p>
+        <p style="font-size:12px;margin-top:15px;color:#666">
+          Pastikan Firestore Rules sudah diatur:<br>
+          <code style="background:#f5f5f5;padding:5px 10px;border-radius:6px;display:inline-block;margin-top:8px">
+            allow read, write: if true;
+          </code>
+        </p>
+        <button onclick="location.reload()" style="margin-top:20px;background:#ff6b9d;color:white;border:none;padding:12px 25px;border-radius:10px;cursor:pointer;font-weight:600">
+          🔄 Coba Lagi
+        </button>
+      </div>
+    `;
   }
 }
 
@@ -511,15 +533,17 @@ function renderProducts() {
   const grid = document.getElementById('productGrid');
   let filtered = products;
   
-  if (currentCategory !== 'all') {
-    filtered = filtered.filter(p => p.category === currentCategory);
-  }
-  if (searchQuery) {
-    filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
-  }
+  if (currentCategory !== 'all') filtered = filtered.filter(p => p.category === currentCategory);
+  if (searchQuery) filtered = filtered.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
   
   if (filtered.length === 0) {
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="emoji">🔍</div><p>Produk tidak ditemukan</p></div>';
+    grid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1">
+        <div class="emoji">📦</div>
+        <p style="font-weight:600;font-size:16px;color:#666">Belum Ada Produk</p>
+        <p style="font-size:13px;margin-top:8px">Produk akan muncul setelah admin menambahkannya</p>
+      </div>
+    `;
     return;
   }
   
@@ -539,7 +563,7 @@ function renderProducts() {
         </div>
         <div class="product-info">
           <div class="product-name">${p.name}</div>
-          <div class="product-rating">⭐ ${p.rating} | Stok: ${p.stock}</div>
+          <div class="product-rating">⭐ ${p.rating || 4.5} | Stok: ${p.stock}</div>
           <div class="product-price">
             Rp ${p.price.toLocaleString('id-ID')}
             ${p.oldPrice ? `<span class="old">Rp ${p.oldPrice.toLocaleString('id-ID')}</span>` : ''}
@@ -582,25 +606,19 @@ function addToCart(id) {
   } else {
     cart.push({ id, qty: 1 });
   }
-  
   saveCart();
   showToast('✅ Ditambahkan ke keranjang');
   updateBadges();
 }
 
-function saveCart() {
-  localStorage.setItem('cart', JSON.stringify(cart));
-}
+function saveCart() { localStorage.setItem('cart', JSON.stringify(cart)); }
 
 function updateBadges() {
   document.getElementById('cartBadge').textContent = cart.reduce((a, b) => a + b.qty, 0);
   document.getElementById('wishBadge').textContent = wishlist.length;
 }
 
-function openCart() {
-  renderCart();
-  openModal('cartModal');
-}
+function openCart() { renderCart(); openModal('cartModal'); }
 
 function renderCart() {
   const items = document.getElementById('cartItems');
@@ -615,11 +633,7 @@ function renderCart() {
   items.innerHTML = cart.map(c => {
     const p = products.find(x => x.id === c.id);
     if (!p) return '';
-    
-    const imgHTML = p.image 
-      ? `<img src="${p.image}" alt="${p.name}">`
-      : (p.emoji || '📦');
-    
+    const imgHTML = p.image ? `<img src="${p.image}" alt="${p.name}">` : (p.emoji || '📦');
     return `
       <div class="cart-item">
         <div class="cart-item-img">${imgHTML}</div>
@@ -643,10 +657,7 @@ function renderCart() {
   }, 0);
   
   footer.innerHTML = `
-    <div class="cart-total">
-      <span>Total:</span>
-      <span>Rp ${total.toLocaleString('id-ID')}</span>
-    </div>
+    <div class="cart-total"><span>Total:</span><span>Rp ${total.toLocaleString('id-ID')}</span></div>
     <button class="checkout-btn" onclick="openCheckout()">Lanjut Checkout →</button>
   `;
 }
@@ -654,25 +665,18 @@ function renderCart() {
 function changeQty(id, delta) {
   const item = cart.find(c => c.id === id);
   if (!item) return;
-  
   if (delta > 0) {
     const p = products.find(x => x.id === id);
     if (p && item.qty >= p.stock) return showToast('❌ Stok tidak cukup', true);
   }
-  
   item.qty += delta;
   if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
-  
-  saveCart();
-  renderCart();
-  updateBadges();
+  saveCart(); renderCart(); updateBadges();
 }
 
 function removeFromCart(id) {
   cart = cart.filter(c => c.id !== id);
-  saveCart();
-  renderCart();
-  updateBadges();
+  saveCart(); renderCart(); updateBadges();
   showToast('🗑️ Produk dihapus');
 }
 
@@ -707,14 +711,7 @@ function processCheckout(e) {
     note: document.getElementById('custNote').value,
     items: cart.map(c => {
       const p = products.find(x => x.id === c.id);
-      return {
-        id: c.id,
-        name: p.name,
-        price: p.price,
-        qty: c.qty,
-        emoji: p.emoji || '📦',
-        image: p.image || ''
-      };
+      return { id: c.id, name: p.name, price: p.price, qty: c.qty, emoji: p.emoji || '📦', image: p.image || '' };
     }),
     total: total,
     status: 'Sudah Dibayar',
@@ -732,14 +729,11 @@ function processCheckout(e) {
 
 async function confirmPayment() {
   if (!pendingOrder) return;
-  
   try {
     showLoading('Memproses pesanan...');
-    
-    // Simpan order ke Firebase
     await fbAddOrder(pendingOrder);
     
-    // Update stok produk di Firebase
+    // Update stok produk
     for (const item of pendingOrder.items) {
       const p = products.find(x => x.id === item.id);
       if (p) {
@@ -747,9 +741,7 @@ async function confirmPayment() {
       }
     }
     
-    // Reload products
     products = await fbGetProducts();
-    
     cart = [];
     saveCart();
     updateBadges();
@@ -759,8 +751,8 @@ async function confirmPayment() {
     
     const orderInfo = pendingOrder;
     pendingOrder = null;
-    
     hideLoading();
+    
     alert(`🎉 PEMBAYARAN BERHASIL!\n\n📋 No. Pesanan: ${orderInfo.orderId}\n👤 Nama: ${orderInfo.customer}\n💰 Total: Rp ${orderInfo.total.toLocaleString('id-ID')}\n📱 Metode: QRIS\n\n✅ Pesanan sedang diproses.\nTerima kasih telah berbelanja di BabyCare Shop! ❤️`);
     
     renderProducts();
@@ -794,18 +786,13 @@ function toggleWishlist(id) {
 
 function openWishlist() {
   const container = document.getElementById('wishlistItems');
-  
   if (wishlist.length === 0) {
     container.innerHTML = '<div class="empty"><div class="emoji">💔</div><p>Wishlist masih kosong</p></div>';
   } else {
     container.innerHTML = wishlist.map(id => {
       const p = products.find(x => x.id === id);
       if (!p) return '';
-      
-      const imgHTML = p.image 
-        ? `<img src="${p.image}" alt="${p.name}">`
-        : (p.emoji || '📦');
-      
+      const imgHTML = p.image ? `<img src="${p.image}" alt="${p.name}">` : (p.emoji || '📦');
       return `
         <div class="cart-item">
           <div class="cart-item-img">${imgHTML}</div>
@@ -813,10 +800,7 @@ function openWishlist() {
             <h4>${p.name}</h4>
             <p>Rp ${p.price.toLocaleString('id-ID')}</p>
           </div>
-          <button class="btn-add" style="width:auto;padding:8px 15px" 
-                  onclick="addToCart('${p.id}'); closeModal('wishlistModal')">
-            + Keranjang
-          </button>
+          <button class="btn-add" style="width:auto;padding:8px 15px" onclick="addToCart('${p.id}'); closeModal('wishlistModal')">+ Keranjang</button>
         </div>
       `;
     }).join('');
@@ -824,21 +808,17 @@ function openWishlist() {
   openModal('wishlistModal');
 }
 
-// ========== DETAIL PRODUK ==========
+// ========== DETAIL ==========
 function showDetail(id) {
   const p = products.find(x => x.id === id);
   if (!p) return;
-  
-  const imgHTML = p.image 
-    ? `<img src="${p.image}" alt="${p.name}">`
-    : (p.emoji || '📦');
-  
+  const imgHTML = p.image ? `<img src="${p.image}" alt="${p.name}">` : (p.emoji || '📦');
   document.getElementById('detailContent').innerHTML = `
     <div class="detail-grid">
       <div class="detail-img">${imgHTML}</div>
       <div class="detail-info">
         <h2>${p.name}</h2>
-        <div class="product-rating">⭐ ${p.rating} | Stok: ${p.stock}</div>
+        <div class="product-rating">⭐ ${p.rating || 4.5} | Stok: ${p.stock}</div>
         <div class="price">
           Rp ${p.price.toLocaleString('id-ID')}
           ${p.oldPrice ? `<span style="font-size:16px;color:#999;text-decoration:line-through;margin-left:10px">Rp ${p.oldPrice.toLocaleString('id-ID')}</span>` : ''}
@@ -848,9 +828,7 @@ function showDetail(id) {
           <p><strong>Kategori:</strong> ${p.category}</p>
           <p><strong>Status:</strong> ${p.stock > 0 ? '✅ Tersedia' : '❌ Stok Habis'}</p>
         </div>
-        <button class="checkout-btn" 
-                onclick="addToCart('${p.id}'); closeModal('detailModal')" 
-                ${p.stock <= 0 ? 'disabled' : ''}>
+        <button class="checkout-btn" onclick="addToCart('${p.id}'); closeModal('detailModal')" ${p.stock <= 0 ? 'disabled' : ''}>
           ${p.stock <= 0 ? '❌ Stok Habis' : '🛒 Tambah ke Keranjang'}
         </button>
       </div>
@@ -861,44 +839,30 @@ function showDetail(id) {
 
 // ========== LOGIN ==========
 function openLogin() { openModal('loginModal'); }
-
 function switchTab(type, btn) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('loginForm').style.display = type === 'login' ? 'block' : 'none';
   document.getElementById('registerForm').style.display = type === 'register' ? 'block' : 'none';
 }
-
-function doLogin(e) {
-  e.preventDefault();
-  showToast('✅ Berhasil masuk!');
-  closeModal('loginModal');
-}
-
-function doRegister(e) {
-  e.preventDefault();
-  showToast('🎉 Pendaftaran berhasil!');
-  closeModal('loginModal');
-}
+function doLogin(e) { e.preventDefault(); showToast('✅ Berhasil masuk!'); closeModal('loginModal'); }
+function doRegister(e) { e.preventDefault(); showToast('🎉 Pendaftaran berhasil!'); closeModal('loginModal'); }
 
 // ========== UTILS ==========
 function openModal(id) {
   document.getElementById(id).classList.add('active');
   document.body.style.overflow = 'hidden';
 }
-
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
   document.body.style.overflow = '';
 }
-
 function showToast(msg, isError = false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'toast show' + (isError ? ' error' : '');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
-
 document.querySelectorAll('.modal').forEach(m => {
   m.addEventListener('click', e => {
     if (e.target === m) {
@@ -907,7 +871,6 @@ document.querySelectorAll('.modal').forEach(m => {
     }
   });
 });
-
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.querySelectorAll('.modal.active').forEach(m => {
@@ -917,7 +880,7 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ========== EXPOSE FUNCTIONS TO WINDOW (untuk onclick) ==========
+// ========== EXPOSE TO WINDOW ==========
 window.filterCategory = filterCategory;
 window.searchProducts = searchProducts;
 window.scrollToProducts = scrollToProducts;
