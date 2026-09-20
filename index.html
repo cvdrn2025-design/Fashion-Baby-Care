@@ -126,72 +126,170 @@
   }
   .hero button:hover { background: #e5517f; transform: translateY(-2px); }
 
-  /* KATEGORI - GRID */
-  .categories {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    padding: 20px 5%;
+  /* KATEGORI DROPDOWN */
+  .filter-bar {
     max-width: 1400px;
-    margin: auto;
-    align-items: stretch;
-  }
-  .cat-btn {
+    margin: 0 auto 20px;
+    padding: 0 5%;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  .filter-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    display: flex;
+    align-items: center;
     gap: 6px;
-    padding: 16px 10px;
+  }
+
+  /* DROPDOWN CUSTOM */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+    min-width: 220px;
+  }
+  .dropdown-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 18px;
     background: white;
     border: 2px solid #eee;
-    border-radius: 15px;
+    border-radius: 12px;
     cursor: pointer;
+    font-size: 14px;
     font-weight: 600;
-    transition: .3s;
-    font-size: 13px;
     color: var(--dark);
-    text-align: center;
-    line-height: 1.3;
-    min-height: 95px;
-    height: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
+    transition: .3s;
+    text-align: left;
   }
-  .cat-btn .cat-icon { font-size: 28px; line-height: 1; flex-shrink: 0; }
-  .cat-btn .cat-label {
-    font-size: 11px;
-    color: #999;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    padding: 0 4px;
-  }
-  .cat-btn > span:not(.cat-icon):not(.cat-label) {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    padding: 0 4px;
-  }
-  .cat-btn:hover {
+  .dropdown-toggle:hover {
     border-color: var(--primary);
     background: #fff5f9;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(255,107,157,0.15);
   }
-  .cat-btn.active {
+  .dropdown.open .dropdown-toggle {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(255,107,157,0.1);
+  }
+  .dropdown-toggle .dropdown-current {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    overflow: hidden;
+  }
+  .dropdown-toggle .dropdown-current .cat-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .dropdown-toggle .dropdown-current .cat-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dropdown-toggle .arrow {
+    font-size: 12px;
+    color: #999;
+    transition: transform .3s;
+    flex-shrink: 0;
+  }
+  .dropdown.open .dropdown-toggle .arrow {
+    transform: rotate(180deg);
+    color: var(--primary);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    padding: 8px;
+    z-index: 50;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: .25s;
+    max-height: 350px;
+    overflow-y: auto;
+  }
+  .dropdown.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark);
+    transition: .2s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .dropdown-item:hover {
+    background: #fff5f9;
+    color: var(--primary);
+  }
+  .dropdown-item.active {
     background: linear-gradient(135deg, #ff6b9d, #ffa8c5);
     color: white;
-    border-color: var(--primary);
-    box-shadow: 0 6px 20px rgba(255,107,157,0.3);
+    font-weight: 600;
   }
-  .cat-btn.active .cat-label { color: rgba(255,255,255,0.9); }
+  .dropdown-item .cat-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+  }
+  .dropdown-item .cat-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .dropdown-item .cat-check {
+    font-size: 14px;
+    opacity: 0;
+  }
+  .dropdown-item.active .cat-check {
+    opacity: 1;
+  }
+
+  /* INFO PRODUK */
+  .product-count {
+    font-size: 13px;
+    color: #999;
+    background: #f5f5f5;
+    padding: 8px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .product-count b { color: var(--primary); }
 
   /* SECTION TITLE */
-  .section-title { text-align: center; margin: 40px 0 20px; font-size: 28px; }
+  .section-title { text-align: center; margin: 20px 0 20px; font-size: 28px; }
   .section-title span { color: var(--primary); }
 
   /* INFO PENCARIAN */
@@ -449,18 +547,10 @@
       padding: 12px 4%; 
       row-gap: 10px; 
     }
-    .logo { 
-      font-size: 20px; 
-      flex: 1;
-    }
-    .nav-icons {
-      gap: 16px;
-    }
-    .nav-icons .icon {
-      font-size: 20px;
-    }
+    .logo { font-size: 20px; flex: 1; }
+    .nav-icons { gap: 16px; }
+    .nav-icons .icon { font-size: 20px; }
     
-    /* SEARCH FULL WIDTH */
     .search-bar { 
       order: 3; 
       width: 100%; 
@@ -469,40 +559,27 @@
       min-width: 100%; 
       flex-basis: 100%;
     }
-    .search-bar input { 
-      padding: 11px 95px 11px 40px; 
-      font-size: 14px; 
-    }
-    .search-bar .search-icon { 
-      left: 14px; 
-      font-size: 14px; 
-    }
-    .search-bar .clear-btn { 
-      right: 64px; 
-      width: 20px; 
-      height: 20px; 
-      font-size: 12px; 
-    }
-    .search-bar .search-btn { 
-      padding: 8px 14px; 
-      font-size: 12px; 
-      right: 4px;
-      height: 36px;
-    }
+    .search-bar input { padding: 11px 95px 11px 40px; font-size: 14px; }
+    .search-bar .search-icon { left: 14px; font-size: 14px; }
+    .search-bar .clear-btn { right: 64px; width: 20px; height: 20px; font-size: 12px; }
+    .search-bar .search-btn { padding: 8px 14px; font-size: 12px; right: 4px; height: 36px; }
     
-    /* KATEGORI 2 KOLOM */
-    .categories {
-      grid-template-columns: repeat(2, 1fr);
+    /* FILTER BAR MOBILE */
+    .filter-bar {
+      flex-direction: column;
+      align-items: stretch;
       gap: 10px;
-      padding: 15px 4%;
+      padding: 0 4%;
     }
-    .cat-btn {
-      padding: 14px 8px;
-      min-height: 90px;
-      font-size: 12px;
+    .filter-bar-left {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
     }
-    .cat-btn .cat-icon { font-size: 24px; }
-    .cat-btn .cat-label { font-size: 10px; }
+    .filter-label { justify-content: flex-start; }
+    .dropdown { width: 100%; min-width: 100%; }
+    .dropdown-toggle { padding: 12px 16px; font-size: 14px; }
+    .product-count { text-align: center; }
     
     .hero h1 { font-size: 26px; }
     .hero { padding: 30px 20px; }
@@ -515,6 +592,7 @@
     .btn-add { font-size: 13px; padding: 8px; }
     .modal-content { padding: 20px; }
     .search-info .info-text { font-size: 13px; padding: 8px 14px; }
+    .section-title { font-size: 22px; }
   }
 </style>
 </head>
@@ -561,43 +639,60 @@
   <button onclick="scrollToProducts()">Belanja Sekarang 🛍️</button>
 </div>
 
-<!-- KATEGORI GRID -->
-<div class="categories">
-  <button class="cat-btn active" onclick="filterCategory('all', this)">
-    <span class="cat-icon">🛍️</span>
-    <span>Semua</span>
-    <span class="cat-label">Semua Produk</span>
-  </button>
-  <button class="cat-btn" onclick="filterCategory('baju', this)">
-    <span class="cat-icon">👕</span>
-    <span>Baju Bayi</span>
-    <span class="cat-label">Pakaian Lucu</span>
-  </button>
-  <button class="cat-btn" onclick="filterCategory('celana', this)">
-    <span class="cat-icon">👖</span>
-    <span>Celana</span>
-    <span class="cat-label">Nyaman & Elastis</span>
-  </button>
-  <button class="cat-btn" onclick="filterCategory('aksesoris', this)">
-    <span class="cat-icon">🎀</span>
-    <span>Aksesoris</span>
-    <span class="cat-label">Topi, Selimut, dll</span>
-  </button>
-  <button class="cat-btn" onclick="filterCategory('perawatan', this)">
-    <span class="cat-icon">🧴</span>
-    <span>Perawatan</span>
-    <span class="cat-label">Sabun, Minyak, dll</span>
-  </button>
-  <button class="cat-btn" onclick="filterCategory('mainan', this)">
-    <span class="cat-icon">🧸</span>
-    <span>Mainan</span>
-    <span class="cat-label">Edukatif & Aman</span>
-  </button>
-  <button class="cat-btn" onclick="filterCategory('sepatu', this)">
-    <span class="cat-icon">👟</span>
-    <span>Sepatu</span>
-    <span class="cat-label">Soft Sole Anti Slip</span>
-  </button>
+<!-- FILTER BAR - KATEGORI DROPDOWN -->
+<div class="filter-bar">
+  <div class="filter-bar-left">
+    <span class="filter-label">📂 Kategori:</span>
+    <div class="dropdown" id="categoryDropdown">
+      <button class="dropdown-toggle" onclick="toggleDropdown(event)">
+        <span class="dropdown-current">
+          <span class="cat-icon" id="currentCatIcon">🛍️</span>
+          <span class="cat-text" id="currentCatText">Semua Produk</span>
+        </span>
+        <span class="arrow">▼</span>
+      </button>
+      <div class="dropdown-menu">
+        <button class="dropdown-item active" onclick="selectCategory('all', '🛍️', 'Semua Produk', this)">
+          <span class="cat-icon">🛍️</span>
+          <span class="cat-text">Semua Produk</span>
+          <span class="cat-check">✓</span>
+        </button>
+        <button class="dropdown-item" onclick="selectCategory('baju', '👕', 'Baju Bayi', this)">
+          <span class="cat-icon">👕</span>
+          <span class="cat-text">Baju Bayi</span>
+          <span class="cat-check">✓</span>
+        </button>
+        <button class="dropdown-item" onclick="selectCategory('celana', '👖', 'Celana', this)">
+          <span class="cat-icon">👖</span>
+          <span class="cat-text">Celana</span>
+          <span class="cat-check">✓</span>
+        </button>
+        <button class="dropdown-item" onclick="selectCategory('aksesoris', '🎀', 'Aksesoris', this)">
+          <span class="cat-icon">🎀</span>
+          <span class="cat-text">Aksesoris</span>
+          <span class="cat-check">✓</span>
+        </button>
+        <button class="dropdown-item" onclick="selectCategory('perawatan', '🧴', 'Perawatan', this)">
+          <span class="cat-icon">🧴</span>
+          <span class="cat-text">Perawatan</span>
+          <span class="cat-check">✓</span>
+        </button>
+        <button class="dropdown-item" onclick="selectCategory('mainan', '🧸', 'Mainan', this)">
+          <span class="cat-icon">🧸</span>
+          <span class="cat-text">Mainan</span>
+          <span class="cat-check">✓</span>
+        </button>
+        <button class="dropdown-item" onclick="selectCategory('sepatu', '👟', 'Sepatu', this)">
+          <span class="cat-icon">👟</span>
+          <span class="cat-text">Sepatu</span>
+          <span class="cat-check">✓</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="product-count" id="productCount">
+    Menampilkan <b>0</b> produk
+  </div>
 </div>
 
 <!-- INFO PENCARIAN -->
@@ -762,7 +857,6 @@ function hideLoading() {
 async function loadProducts() {
   const grid = document.getElementById('productGrid');
   
-  // Skeleton loading
   grid.innerHTML = Array(8).fill(0).map(() => `
     <div class="product-card">
       <div class="product-img skeleton"></div>
@@ -777,7 +871,6 @@ async function loadProducts() {
   try {
     products = await fbGetProducts();
     
-    // Auto-seed jika kosong
     if (products.length === 0) {
       console.log('📦 Produk kosong, seeding default products...');
       try {
@@ -799,12 +892,6 @@ async function loadProducts() {
         <div class="emoji">⚠️</div>
         <p style="font-weight:600;color:#e74c3c">Gagal memuat produk</p>
         <p style="font-size:13px;margin-top:10px">${err.message}</p>
-        <p style="font-size:12px;margin-top:15px;color:#666">
-          Pastikan Firestore Rules sudah diatur:<br>
-          <code style="background:#f5f5f5;padding:5px 10px;border-radius:6px;display:inline-block;margin-top:8px">
-            allow read, write: if true;
-          </code>
-        </p>
         <button onclick="location.reload()" style="margin-top:20px;background:#ff6b9d;color:white;border:none;padding:12px 25px;border-radius:10px;cursor:pointer;font-weight:600">
           🔄 Coba Lagi
         </button>
@@ -813,6 +900,39 @@ async function loadProducts() {
   }
 }
 
+// ========== DROPDOWN KATEGORI ==========
+function toggleDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('categoryDropdown');
+  dd.classList.toggle('open');
+}
+
+function selectCategory(cat, icon, text, btn) {
+  currentCategory = cat;
+  
+  // Update tampilan dropdown
+  document.getElementById('currentCatIcon').textContent = icon;
+  document.getElementById('currentCatText').textContent = text;
+  
+  // Update active state
+  document.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('active'));
+  btn.classList.add('active');
+  
+  // Close dropdown
+  document.getElementById('categoryDropdown').classList.remove('open');
+  
+  // Render produk
+  renderProducts();
+}
+
+// Close dropdown saat klik di luar
+document.addEventListener('click', (e) => {
+  const dd = document.getElementById('categoryDropdown');
+  if (dd && !dd.contains(e.target)) {
+    dd.classList.remove('open');
+  }
+});
+
 // ========== RENDER PRODUK ==========
 function renderProducts() {
   const grid = document.getElementById('productGrid');
@@ -820,15 +940,14 @@ function renderProducts() {
   const searchKeyword = document.getElementById('searchKeyword');
   const searchCount = document.getElementById('searchCount');
   const title = document.getElementById('productsTitle');
+  const productCount = document.getElementById('productCount');
   
   let filtered = products;
   
-  // Filter kategori
   if (currentCategory !== 'all') {
     filtered = filtered.filter(p => p.category === currentCategory);
   }
   
-  // Filter pencarian (case-insensitive)
   if (searchQuery.trim()) {
     const q = searchQuery.toLowerCase().trim();
     filtered = filtered.filter(p => 
@@ -861,6 +980,9 @@ function renderProducts() {
     }
   }
   
+  // Update jumlah produk
+  productCount.innerHTML = `Menampilkan <b>${filtered.length}</b> produk`;
+  
   // Empty state
   if (filtered.length === 0) {
     if (searchQuery.trim()) {
@@ -886,13 +1008,12 @@ function renderProducts() {
     return;
   }
   
-  // Render
+  // Render produk
   grid.innerHTML = filtered.map(p => {
     const imgHTML = p.image 
       ? `<img src="${p.image}" alt="${p.name}" loading="lazy">`
       : (p.emoji || '📦');
     
-    // Highlight keyword
     let displayName = p.name;
     if (searchQuery.trim()) {
       const regex = new RegExp(`(${escapeRegex(searchQuery.trim())})`, 'gi');
@@ -958,14 +1079,7 @@ function clearSearch() {
   showToast('✕ Pencarian dihapus');
 }
 
-// ========== FILTER KATEGORI ==========
-function filterCategory(cat, btn) {
-  currentCategory = cat;
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderProducts();
-}
-
+// ========== SCROLL ==========
 function scrollToProducts() {
   document.getElementById('productsTitle').scrollIntoView({ behavior: 'smooth' });
 }
@@ -1252,11 +1366,13 @@ document.addEventListener('keydown', e => {
       m.classList.remove('active');
       document.body.style.overflow = '';
     });
+    document.getElementById('categoryDropdown').classList.remove('open');
   }
 });
 
 // ========== EXPOSE TO WINDOW ==========
-window.filterCategory = filterCategory;
+window.toggleDropdown = toggleDropdown;
+window.selectCategory = selectCategory;
 window.searchProducts = searchProducts;
 window.handleSearchInput = handleSearchInput;
 window.clearSearch = clearSearch;
@@ -1284,4 +1400,4 @@ loadProducts();
 updateBadges();
 </script>
 </body>
- </html>
+         </html>
