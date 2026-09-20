@@ -31,16 +31,10 @@
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .login-box h1 {
-    text-align: center; color: var(--primary); margin-bottom: 10px; font-size: 28px;
-  }
-  .login-box .subtitle {
-    text-align: center; color: #999; margin-bottom: 30px; font-size: 14px;
-  }
+  .login-box h1 { text-align: center; color: var(--primary); margin-bottom: 10px; font-size: 28px; }
+  .login-box .subtitle { text-align: center; color: #999; margin-bottom: 30px; font-size: 14px; }
   .login-box .form-group { margin-bottom: 20px; }
-  .login-box label {
-    display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px;
-  }
+  .login-box label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
   .login-box input {
     width: 100%; padding: 14px; border: 2px solid #eee;
     border-radius: 10px; outline: none; font-size: 14px; transition: .3s;
@@ -86,10 +80,7 @@
     font-weight: 600;
   }
 
-  .main-content {
-    margin-left: 260px; flex: 1; padding: 30px;
-    min-height: 100vh;
-  }
+  .main-content { margin-left: 260px; flex: 1; padding: 30px; min-height: 100vh; }
   .page-header {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
@@ -211,6 +202,86 @@
   }
   .btn-submit:hover { background: #e5517f; }
 
+  /* UPLOAD FOTO */
+  .upload-section {
+    background: #fff9fb;
+    border: 2px dashed #ffc9dd;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 15px;
+    transition: .3s;
+  }
+  .upload-section:hover { border-color: var(--primary); background: #fff5f9; }
+  .upload-section.dragover {
+    border-color: var(--primary);
+    background: #ffe9f2;
+    transform: scale(1.01);
+  }
+
+  .upload-preview {
+    width: 180px; height: 180px;
+    border-radius: 15px;
+    background: #f0f0f0;
+    margin: 0 auto 15px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    position: relative;
+    border: 3px solid white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .upload-preview img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .upload-preview .placeholder {
+    font-size: 60px; color: #ccc;
+  }
+  .upload-preview .remove-img {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--danger); color: white;
+    border: none; width: 30px; height: 30px;
+    border-radius: 50%; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: .2s;
+  }
+  .upload-preview .remove-img:hover { background: #c0392b; transform: scale(1.1); }
+
+  .upload-buttons {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  }
+  .upload-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border-radius: 10px; cursor: pointer;
+    font-weight: 600; font-size: 14px; border: none;
+    transition: .3s;
+  }
+  .btn-gallery {
+    background: var(--primary); color: white;
+  }
+  .btn-gallery:hover { background: #e5517f; transform: translateY(-2px); }
+  .btn-camera {
+    background: var(--info); color: white;
+  }
+  .btn-camera:hover { background: #2980b9; transform: translateY(-2px); }
+
+  .upload-hint {
+    font-size: 12px; color: #999; margin-top: 12px;
+    line-height: 1.5;
+  }
+
+  /* Foto di tabel */
+  .table-img {
+    width: 50px; height: 50px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #ffd6e7;
+    border: 2px solid white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+
   /* ORDER DETAIL */
   .order-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
   .order-detail-item { background: #f8f9fb; padding: 12px; border-radius: 10px; }
@@ -225,8 +296,9 @@
   .order-item-emoji {
     width: 50px; height: 50px; background: #ffd6e7;
     border-radius: 10px; display: flex; align-items: center;
-    justify-content: center; font-size: 24px;
+    justify-content: center; font-size: 24px; overflow: hidden;
   }
+  .order-item-emoji img { width: 100%; height: 100%; object-fit: cover; }
   .order-item-info { flex: 1; }
   .order-item-info .name { font-weight: 600; font-size: 14px; }
   .order-item-info .detail { font-size: 13px; color: #666; }
@@ -242,12 +314,17 @@
   .toast.show { transform: translateX(0); opacity: 1; }
   .toast.error { background: var(--danger); }
 
-  .empty {
-    text-align: center; padding: 40px; color: #999;
-  }
+  .empty { text-align: center; padding: 40px; color: #999; }
   .empty .emoji { font-size: 50px; margin-bottom: 10px; }
 
-  /* RESPONSIVE */
+  /* Loading spinner saat proses foto */
+  .processing {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+
   @media (max-width: 900px) {
     .sidebar { width: 70px; }
     .sidebar .brand { font-size: 14px; text-align: center; padding: 15px 5px; }
@@ -262,6 +339,7 @@
     .form-row { grid-template-columns: 1fr; }
     .order-detail-grid { grid-template-columns: 1fr; }
     table th, table td { padding: 10px; font-size: 12px; }
+    .upload-preview { width: 150px; height: 150px; }
   }
 </style>
 </head>
@@ -283,9 +361,7 @@
       </div>
       <button type="submit">Masuk ke Dashboard →</button>
     </form>
-    <div class="hint">
-      💡 Default: <b>admin</b> / <b>admin123</b>
-    </div>
+    <div class="hint">💡 Default: <b>admin</b> / <b>admin123</b></div>
   </div>
 </div>
 
@@ -303,7 +379,7 @@
   </aside>
 
   <main class="main-content">
-    <!-- DASHBOARD PAGE -->
+    <!-- DASHBOARD -->
     <div id="page-dashboard">
       <div class="page-header">
         <h1>📊 Dashboard</h1>
@@ -339,16 +415,13 @@
           <div class="stat-icon">⏳</div>
         </div>
       </div>
-
       <div class="table-container">
-        <div class="table-header">
-          <h3>🕒 Pesanan Terbaru</h3>
-        </div>
+        <div class="table-header"><h3>🕒 Pesanan Terbaru</h3></div>
         <div id="recentOrders"></div>
       </div>
     </div>
 
-    <!-- PRODUCTS PAGE -->
+    <!-- PRODUCTS -->
     <div id="page-products" style="display:none">
       <div class="page-header">
         <h1>📦 Manajemen Produk</h1>
@@ -364,7 +437,8 @@
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Produk</th>
+                <th>Foto</th>
+                <th>Nama Produk</th>
                 <th>Kategori</th>
                 <th>Harga</th>
                 <th>Stok</th>
@@ -377,11 +451,9 @@
       </div>
     </div>
 
-    <!-- ORDERS PAGE -->
+    <!-- ORDERS -->
     <div id="page-orders" style="display:none">
-      <div class="page-header">
-        <h1>🛍️ Manajemen Pesanan</h1>
-      </div>
+      <div class="page-header"><h1>🛍️ Manajemen Pesanan</h1></div>
       <div class="table-container">
         <div class="table-header">
           <h3>Daftar Pesanan</h3>
@@ -414,6 +486,32 @@
     <h2 id="productModalTitle">➕ Tambah Produk</h2>
     <form onsubmit="saveProduct(event)">
       <input type="hidden" id="productId">
+
+      <!-- UPLOAD FOTO -->
+      <div class="form-group">
+        <label>📸 Foto Produk</label>
+        <div class="upload-section" id="uploadSection">
+          <div class="upload-preview" id="uploadPreview">
+            <div class="placeholder">📷</div>
+          </div>
+          <div class="upload-buttons">
+            <button type="button" class="upload-btn btn-gallery" onclick="document.getElementById('fileGallery').click()">
+              🖼️ Pilih dari Galeri
+            </button>
+            <button type="button" class="upload-btn btn-camera" onclick="document.getElementById('fileCamera').click()">
+              📷 Ambil Foto
+            </button>
+          </div>
+          <div class="upload-hint">
+            Format: JPG, PNG, WEBP • Maks 2MB<br>
+            Foto akan otomatis dikompres agar hemat penyimpanan
+          </div>
+        </div>
+        <!-- Input file tersembunyi -->
+        <input type="file" id="fileGallery" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
+        <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event)">
+      </div>
+
       <div class="form-group">
         <label>Nama Produk *</label>
         <input type="text" id="productName" required>
@@ -445,15 +543,9 @@
           <input type="number" id="productStock" required min="0">
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Emoji Produk</label>
-          <input type="text" id="productEmoji" placeholder="👕" maxlength="4">
-        </div>
-        <div class="form-group">
-          <label>Rating (1-5)</label>
-          <input type="number" id="productRating" min="0" max="5" step="0.1" value="4.5">
-        </div>
+      <div class="form-group">
+        <label>Rating (1-5)</label>
+        <input type="number" id="productRating" min="0" max="5" step="0.1" value="4.5">
       </div>
       <div class="form-group">
         <label>Deskripsi</label>
@@ -500,7 +592,6 @@ function logout() {
   location.reload();
 }
 
-// Check login on load
 window.addEventListener('DOMContentLoaded', () => {
   if (sessionStorage.getItem('adminLoggedIn') === 'true') {
     document.getElementById('loginScreen').style.display = 'none';
@@ -509,20 +600,20 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ========== DATA ==========
+// ========== DATA DEFAULT ==========
 const DEFAULT_PRODUCTS = [
-  { id: 1, name: "Baju Bayi Lengan Panjang Katun Premium", price: 75000, oldPrice: 95000, category: "baju", emoji: "👕", rating: 4.8, stock: 50, desc: "Bahan katun 100% lembut, aman untuk kulit sensitif bayi. Tersedia ukuran 0-24 bulan." },
-  { id: 2, name: "Celana Joger Bayi Lucu Motif Hewan", price: 55000, oldPrice: 70000, category: "celana", emoji: "👖", rating: 4.7, stock: 30, desc: "Celana joger elastis dengan motif hewan menggemaskan. Nyaman untuk aktivitas bayi." },
-  { id: 3, name: "Topi Bayi Rajut Import Premium", price: 35000, oldPrice: 45000, category: "aksesoris", emoji: "🧢", rating: 4.9, stock: 40, desc: "Topi rajut lembut, hangat, dan stylish. Cocok untuk newborn hingga 12 bulan." },
-  { id: 4, name: "Sabun Mandi Bayi Organik 500ml", price: 65000, oldPrice: 85000, category: "perawatan", emoji: "🧴", rating: 4.8, stock: 25, desc: "Sabun organik dengan formula lembut, bebas SLS dan paraben. Aman untuk kulit bayi." },
-  { id: 5, name: "Mainan Edukasi Rattle Set 5in1", price: 120000, oldPrice: 150000, category: "mainan", emoji: "🧸", rating: 4.9, stock: 15, desc: "Set mainan rattle edukatif untuk stimulasi sensorik dan motorik bayi." },
-  { id: 6, name: "Sepatu Bayi Soft Sole Anti Slip", price: 85000, oldPrice: 110000, category: "sepatu", emoji: "👟", rating: 4.7, stock: 20, desc: "Sepatu soft sole dengan anti slip, melindungi kaki bayi saat belajar berjalan." },
-  { id: 7, name: "Bodysuit Bayi Motif Bunga Premium", price: 68000, oldPrice: 88000, category: "baju", emoji: "👚", rating: 4.8, stock: 35, desc: "Bodysuit dengan kancing snap mudah dibuka. Bahan katun bambu super lembut." },
-  { id: 8, name: "Selimut Bayi Double Fleece Ultra Soft", price: 95000, oldPrice: 125000, category: "aksesoris", emoji: "🛏️", rating: 4.9, stock: 18, desc: "Selimut double fleece super lembut, hangat, dan tidak membuat bayi kepanasan." },
-  { id: 9, name: "Celana Pop Bayi Set 3pcs Warna Pastel", price: 89000, oldPrice: 115000, category: "celana", emoji: "🩳", rating: 4.6, stock: 22, desc: "Paket 3 celana pop dengan warna pastel lucu. Bahan adem dan nyaman." },
-  { id: 10, name: "Minyak Telon Plus Anti Kembung 100ml", price: 45000, oldPrice: 55000, category: "perawatan", emoji: "💧", rating: 4.9, stock: 60, desc: "Minyak telon dengan aroma lavender, hangat dan membantu meredakan kembung." },
-  { id: 11, name: "Boneka Baby Rattle Genggam Lucu", price: 55000, oldPrice: 75000, category: "mainan", emoji: "🐻", rating: 4.7, stock: 28, desc: "Boneka rattle genggam dengan suara lembut, membantu stimulasi pendengaran." },
-  { id: 12, name: "Sandal Bayi Karakter Lucu Import", price: 65000, oldPrice: 85000, category: "sepatu", emoji: "🩴", rating: 4.6, stock: 32, desc: "Sandal karakter lucu dengan bahan karet lembut, tidak licin." },
+  { id: 1, name: "Baju Bayi Lengan Panjang Katun Premium", price: 75000, oldPrice: 95000, category: "baju", emoji: "👕", image: "", rating: 4.8, stock: 50, desc: "Bahan katun 100% lembut, aman untuk kulit sensitif bayi. Tersedia ukuran 0-24 bulan." },
+  { id: 2, name: "Celana Joger Bayi Lucu Motif Hewan", price: 55000, oldPrice: 70000, category: "celana", emoji: "👖", image: "", rating: 4.7, stock: 30, desc: "Celana joger elastis dengan motif hewan menggemaskan. Nyaman untuk aktivitas bayi." },
+  { id: 3, name: "Topi Bayi Rajut Import Premium", price: 35000, oldPrice: 45000, category: "aksesoris", emoji: "🧢", image: "", rating: 4.9, stock: 40, desc: "Topi rajut lembut, hangat, dan stylish. Cocok untuk newborn hingga 12 bulan." },
+  { id: 4, name: "Sabun Mandi Bayi Organik 500ml", price: 65000, oldPrice: 85000, category: "perawatan", emoji: "🧴", image: "", rating: 4.8, stock: 25, desc: "Sabun organik dengan formula lembut, bebas SLS dan paraben. Aman untuk kulit bayi." },
+  { id: 5, name: "Mainan Edukasi Rattle Set 5in1", price: 120000, oldPrice: 150000, category: "mainan", emoji: "🧸", image: "", rating: 4.9, stock: 15, desc: "Set mainan rattle edukatif untuk stimulasi sensorik dan motorik bayi." },
+  { id: 6, name: "Sepatu Bayi Soft Sole Anti Slip", price: 85000, oldPrice: 110000, category: "sepatu", emoji: "👟", image: "", rating: 4.7, stock: 20, desc: "Sepatu soft sole dengan anti slip, melindungi kaki bayi saat belajar berjalan." },
+  { id: 7, name: "Bodysuit Bayi Motif Bunga Premium", price: 68000, oldPrice: 88000, category: "baju", emoji: "👚", image: "", rating: 4.8, stock: 35, desc: "Bodysuit dengan kancing snap mudah dibuka. Bahan katun bambu super lembut." },
+  { id: 8, name: "Selimut Bayi Double Fleece Ultra Soft", price: 95000, oldPrice: 125000, category: "aksesoris", emoji: "🛏️", image: "", rating: 4.9, stock: 18, desc: "Selimut double fleece super lembut, hangat, dan tidak membuat bayi kepanasan." },
+  { id: 9, name: "Celana Pop Bayi Set 3pcs Warna Pastel", price: 89000, oldPrice: 115000, category: "celana", emoji: "🩳", image: "", rating: 4.6, stock: 22, desc: "Paket 3 celana pop dengan warna pastel lucu. Bahan adem dan nyaman." },
+  { id: 10, name: "Minyak Telon Plus Anti Kembung 100ml", price: 45000, oldPrice: 55000, category: "perawatan", emoji: "💧", image: "", rating: 4.9, stock: 60, desc: "Minyak telon dengan aroma lavender, hangat dan membantu meredakan kembung." },
+  { id: 11, name: "Boneka Baby Rattle Genggam Lucu", price: 55000, oldPrice: 75000, category: "mainan", emoji: "🐻", image: "", rating: 4.7, stock: 28, desc: "Boneka rattle genggam dengan suara lembut, membantu stimulasi pendengaran." },
+  { id: 12, name: "Sandal Bayi Karakter Lucu Import", price: 65000, oldPrice: 85000, category: "sepatu", emoji: "🩴", image: "", rating: 4.6, stock: 32, desc: "Sandal karakter lucu dengan bahan karet lembut, tidak licin." },
 ];
 
 function getProducts() {
@@ -537,7 +628,7 @@ function saveProducts(prods) { localStorage.setItem('products', JSON.stringify(p
 function getOrders() { return JSON.parse(localStorage.getItem('orders')) || []; }
 function saveOrders(orders) { localStorage.setItem('orders', JSON.stringify(orders)); }
 
-// ========== INIT ADMIN ==========
+// ========== INIT ==========
 function initAdmin() {
   const date = new Date();
   document.getElementById('currentDate').textContent = 
@@ -546,12 +637,13 @@ function initAdmin() {
   renderProductTable();
   renderOrderTable();
   renderRecentOrders();
+  setupDragDrop();
 }
 
 function updateStats() {
   const products = getProducts();
   const orders = getOrders();
-  const revenue = orders.filter(o => o.status === 'Sudah Dibayar').reduce((s, o) => s + o.total, 0);
+  const revenue = orders.filter(o => o.status === 'Sudah Dibayar' || o.status === 'Dikirim' || o.status === 'Selesai').reduce((s, o) => s + o.total, 0);
   const pending = orders.filter(o => o.status !== 'Selesai' && o.status !== 'Dibatalkan').length;
   document.getElementById('statProducts').textContent = products.length;
   document.getElementById('statOrders').textContent = orders.length;
@@ -559,7 +651,7 @@ function updateStats() {
   document.getElementById('statPending').textContent = pending;
 }
 
-// ========== PAGE NAVIGATION ==========
+// ========== NAVIGATION ==========
 function showPage(page, el) {
   document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
   el.classList.add('active');
@@ -571,29 +663,29 @@ function showPage(page, el) {
   if (page === 'orders') renderOrderTable();
 }
 
-// ========== PRODUCTS CRUD ==========
+// ========== PRODUCTS TABLE ==========
 function renderProductTable(filter = '') {
   const products = getProducts();
   let filtered = products;
   if (filter) filtered = filtered.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
   const tbody = document.getElementById('productTableBody');
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty"><div class="emoji">📦</div>Tidak ada produk</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="empty"><div class="emoji">📦</div>Tidak ada produk</td></tr>';
     return;
   }
   tbody.innerHTML = filtered.map(p => {
     let stockBadge = p.stock > 10 ? 'badge-success' : p.stock > 0 ? 'badge-warning' : 'badge-danger';
+    // Foto atau emoji
+    const imgHTML = p.image 
+      ? `<img src="${p.image}" class="table-img" alt="${p.name}">`
+      : `<div class="table-img">${p.emoji || '📦'}</div>`;
     return `
       <tr>
         <td><b>#${p.id}</b></td>
+        <td>${imgHTML}</td>
         <td>
-          <div style="display:flex;align-items:center;gap:10px">
-            <div style="width:40px;height:40px;background:#ffd6e7;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px">${p.emoji || '📦'}</div>
-            <div>
-              <div style="font-weight:600;font-size:13px">${p.name}</div>
-              <div style="color:#999;font-size:12px">⭐ ${p.rating}</div>
-            </div>
-          </div>
+          <div style="font-weight:600;font-size:13px">${p.name}</div>
+          <div style="color:#999;font-size:12px">⭐ ${p.rating}</div>
         </td>
         <td><span class="badge badge-info">${p.category}</span></td>
         <td>
@@ -612,6 +704,9 @@ function renderProductTable(filter = '') {
   }).join('');
 }
 
+// ========== UPLOAD FOTO ==========
+let currentImageData = ''; // menyimpan base64 foto
+
 function openProductModal(product = null) {
   document.getElementById('productModalTitle').textContent = product ? '✏️ Edit Produk' : '➕ Tambah Produk';
   document.getElementById('productId').value = product ? product.id : '';
@@ -620,12 +715,136 @@ function openProductModal(product = null) {
   document.getElementById('productOldPrice').value = product ? product.oldPrice : '';
   document.getElementById('productCategory').value = product ? product.category : 'baju';
   document.getElementById('productStock').value = product ? product.stock : '';
-  document.getElementById('productEmoji').value = product ? product.emoji : '';
   document.getElementById('productRating').value = product ? product.rating : 4.5;
   document.getElementById('productDesc').value = product ? product.desc : '';
+  
+  // Foto produk
+  currentImageData = product && product.image ? product.image : '';
+  renderImagePreview();
+  
   openModal('productModal');
 }
 
+function renderImagePreview() {
+  const preview = document.getElementById('uploadPreview');
+  if (currentImageData) {
+    preview.innerHTML = `
+      <img src="${currentImageData}" alt="Preview">
+      <button type="button" class="remove-img" onclick="removeImage()" title="Hapus foto">×</button>
+    `;
+  } else {
+    preview.innerHTML = '<div class="placeholder">📷</div>';
+  }
+}
+
+function removeImage() {
+  currentImageData = '';
+  renderImagePreview();
+  showToast('🗑️ Foto dihapus');
+}
+
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  // Validasi tipe
+  if (!file.type.startsWith('image/')) {
+    showToast('❌ File harus berupa gambar!', true);
+    return;
+  }
+  
+  // Validasi ukuran (max 10MB sebelum kompresi)
+  if (file.size > 10 * 1024 * 1024) {
+    showToast('❌ Ukuran file terlalu besar (max 10MB)', true);
+    return;
+  }
+  
+  // Tampilkan loading
+  const preview = document.getElementById('uploadPreview');
+  preview.innerHTML = '<div class="processing">⏳</div>';
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    // Kompres gambar
+    compressImage(e.target.result, 800, 0.8, (compressedData) => {
+      currentImageData = compressedData;
+      renderImagePreview();
+      showToast('✅ Foto berhasil diupload');
+    });
+  };
+  reader.readAsDataURL(file);
+  
+  // Reset input agar bisa pilih file yang sama lagi
+  event.target.value = '';
+}
+
+function compressImage(dataUrl, maxWidth, quality, callback) {
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    let width = img.width;
+    let height = img.height;
+    
+    // Resize jika terlalu besar
+    if (width > maxWidth) {
+      height = (height * maxWidth) / width;
+      width = maxWidth;
+    }
+    
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0, width, height);
+    
+    // Convert ke JPEG dengan kualitas tertentu
+    const compressed = canvas.toDataURL('image/jpeg', quality);
+    callback(compressed);
+  };
+  img.onerror = () => {
+    showToast('❌ Gagal memuat gambar', true);
+    renderImagePreview();
+  };
+  img.src = dataUrl;
+}
+
+// Drag & Drop
+function setupDragDrop() {
+  const section = document.getElementById('uploadSection');
+  if (!section) return;
+  
+  ['dragenter', 'dragover'].forEach(evt => {
+    section.addEventListener(evt, (e) => {
+      e.preventDefault();
+      section.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    section.addEventListener(evt, (e) => {
+      e.preventDefault();
+      section.classList.remove('dragover');
+    });
+  });
+  section.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      handleDroppedFile(file);
+    }
+  });
+}
+
+function handleDroppedFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    compressImage(e.target.result, 800, 0.8, (compressedData) => {
+      currentImageData = compressedData;
+      renderImagePreview();
+      showToast('✅ Foto berhasil diupload');
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+// ========== SAVE PRODUCT ==========
 function editProduct(id) {
   const products = getProducts();
   const p = products.find(x => x.id === id);
@@ -636,29 +855,41 @@ function saveProduct(e) {
   e.preventDefault();
   const products = getProducts();
   const id = document.getElementById('productId').value;
+  
+  // Cek localStorage quota
   const data = {
     name: document.getElementById('productName').value,
     price: parseInt(document.getElementById('productPrice').value),
     oldPrice: parseInt(document.getElementById('productOldPrice').value) || 0,
     category: document.getElementById('productCategory').value,
     stock: parseInt(document.getElementById('productStock').value),
-    emoji: document.getElementById('productEmoji').value || '📦',
+    image: currentImageData, // Foto base64
+    emoji: currentImageData ? '' : '📦', // Fallback emoji
     rating: parseFloat(document.getElementById('productRating').value) || 4.5,
     desc: document.getElementById('productDesc').value,
   };
-  if (id) {
-    const idx = products.findIndex(x => x.id === parseInt(id));
-    products[idx] = { ...products[idx], ...data };
-    showToast('✅ Produk berhasil diupdate!');
-  } else {
-    const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-    products.push({ id: newId, ...data });
-    showToast('✅ Produk berhasil ditambahkan!');
+  
+  try {
+    if (id) {
+      const idx = products.findIndex(x => x.id === parseInt(id));
+      products[idx] = { ...products[idx], ...data };
+      showToast('✅ Produk berhasil diupdate!');
+    } else {
+      const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+      products.push({ id: newId, ...data });
+      showToast('✅ Produk berhasil ditambahkan!');
+    }
+    saveProducts(products);
+    closeModal('productModal');
+    renderProductTable();
+    updateStats();
+  } catch (err) {
+    if (err.name === 'QuotaExceededError') {
+      showToast('❌ Storage penuh! Kompres foto lebih kecil atau hapus produk lama.', true);
+    } else {
+      showToast('❌ Gagal menyimpan: ' + err.message, true);
+    }
   }
-  saveProducts(products);
-  closeModal('productModal');
-  renderProductTable();
-  updateStats();
 }
 
 function deleteProduct(id) {
@@ -727,14 +958,16 @@ function viewOrder(id) {
       <div class="order-detail-item"><div class="label">No. HP</div><div class="value">${o.phone}</div></div>
       <div class="order-detail-item" style="grid-column:1/-1"><div class="label">Alamat</div><div class="value">${o.address}, ${o.city}</div></div>
       ${o.note ? `<div class="order-detail-item" style="grid-column:1/-1"><div class="label">Catatan</div><div class="value">${o.note}</div></div>` : ''}
-      <div class="order-detail-item"><div class="label">Metode Pembayaran</div><div class="value">💳 ${o.payment || 'QRIS'}</div></div>
+      <div class="order-detail-item"><div class="label">Pembayaran</div><div class="value">💳 ${o.payment || 'QRIS'}</div></div>
       <div class="order-detail-item"><div class="label">Tanggal</div><div class="value">${new Date(o.date).toLocaleString('id-ID')}</div></div>
     </div>
     <h3 style="margin-bottom:10px">🛒 Item Pesanan</h3>
     <div class="order-items-list">
       ${o.items.map(item => `
         <div class="order-item">
-          <div class="order-item-emoji">${item.emoji}</div>
+          <div class="order-item-emoji">
+            ${item.image ? `<img src="${item.image}" alt="">` : item.emoji}
+          </div>
           <div class="order-item-info">
             <div class="name">${item.name}</div>
             <div class="detail">${item.qty} × Rp ${item.price.toLocaleString('id-ID')}</div>
@@ -818,4 +1051,4 @@ document.querySelectorAll('.modal').forEach(m => {
 });
 </script>
 </body>
-        </html>
+ </html>
