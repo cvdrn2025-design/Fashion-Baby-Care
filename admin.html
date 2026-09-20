@@ -24,11 +24,6 @@
   .login-box {
     background: white; padding: 40px; border-radius: 20px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.2); width: 100%; max-width: 400px;
-    animation: slideUp .5s;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
   }
   .login-box h1 { text-align: center; color: var(--primary); margin-bottom: 10px; font-size: 28px; }
   .login-box .subtitle { text-align: center; color: #999; margin-bottom: 30px; font-size: 14px; }
@@ -87,10 +82,9 @@
   .btn-primary {
     background: var(--primary); color: white; border: none;
     padding: 12px 24px; border-radius: 10px; cursor: pointer;
-    font-weight: 600; display: inline-flex; align-items: center; gap: 8px;
-    transition: .3s;
+    font-weight: 600;
   }
-  .btn-primary:hover { background: #e5517f; transform: translateY(-2px); }
+  .btn-primary:hover { background: #e5517f; }
 
   .stats-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -100,9 +94,7 @@
     background: white; padding: 25px; border-radius: 15px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     display: flex; justify-content: space-between; align-items: center;
-    transition: .3s;
   }
-  .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
   .stat-card .stat-label { font-size: 13px; color: #999; margin-bottom: 5px; }
   .stat-card .stat-value { font-size: 26px; font-weight: bold; color: var(--dark); }
   .stat-card .stat-icon {
@@ -139,7 +131,6 @@
     font-size: 14px; vertical-align: middle;
   }
   table tr:hover { background: #fafbfc; }
-  table tr:last-child td { border-bottom: none; }
 
   .badge {
     display: inline-block; padding: 5px 12px; border-radius: 20px;
@@ -172,7 +163,7 @@
   .modal-content {
     background: white; border-radius: 20px; padding: 30px;
     max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto;
-    position: relative; animation: slideUp .3s;
+    position: relative;
   }
   .modal-content h2 { color: var(--primary); margin-bottom: 20px; }
   .close-btn {
@@ -203,15 +194,7 @@
     padding: 20px;
     text-align: center;
     margin-bottom: 15px;
-    transition: .3s;
   }
-  .upload-section:hover { border-color: var(--primary); background: #fff5f9; }
-  .upload-section.dragover {
-    border-color: var(--primary);
-    background: #ffe9f2;
-    transform: scale(1.01);
-  }
-
   .upload-preview {
     width: 180px; height: 180px;
     border-radius: 15px;
@@ -229,31 +212,21 @@
     background: var(--danger); color: white;
     border: none; width: 30px; height: 30px;
     border-radius: 50%; cursor: pointer; font-size: 16px;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    transition: .2s;
   }
-  .upload-preview .remove-img:hover { background: #c0392b; transform: scale(1.1); }
-
   .upload-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .upload-btn {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 12px 20px; border-radius: 10px; cursor: pointer;
-    font-weight: 600; font-size: 14px; border: none; transition: .3s;
+    font-weight: 600; font-size: 14px; border: none;
   }
   .btn-gallery { background: var(--primary); color: white; }
-  .btn-gallery:hover { background: #e5517f; transform: translateY(-2px); }
   .btn-camera { background: var(--info); color: white; }
-  .btn-camera:hover { background: #2980b9; transform: translateY(-2px); }
-
-  .upload-hint { font-size: 12px; color: #999; margin-top: 12px; line-height: 1.5; }
+  .upload-hint { font-size: 12px; color: #999; margin-top: 12px; }
 
   .table-img {
     width: 50px; height: 50px;
     border-radius: 10px; object-fit: cover;
     background: #ffd6e7;
-    border: 2px solid white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
     display: flex; align-items: center; justify-content: center;
     font-size: 24px;
   }
@@ -309,7 +282,6 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-overlay p { color: var(--primary); font-weight: 600; }
 
-  /* Banner error firestore */
   .firestore-banner {
     display: none;
     background: #fff3cd;
@@ -322,14 +294,6 @@
     line-height: 1.6;
   }
   .firestore-banner.active { display: block; }
-  .firestore-banner b { color: #856404; }
-  .firestore-banner code {
-    background: #fff;
-    padding: 3px 8px;
-    border-radius: 5px;
-    font-size: 12px;
-    color: #d63384;
-  }
 
   @media (max-width: 900px) {
     .sidebar { width: 70px; }
@@ -351,7 +315,6 @@
 </head>
 <body>
 
-<!-- LOADING OVERLAY -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
   <p id="loadingText">Memuat...</p>
@@ -362,16 +325,16 @@
   <div class="login-box">
     <h1>🔐 Admin Panel</h1>
     <p class="subtitle">BabyCare Shop Management</p>
-    <form onsubmit="adminLogin(event)">
+    <form id="loginFormAdmin">
       <div class="form-group">
         <label>Username</label>
-        <input type="text" id="adminUser" placeholder="Masukkan username" required>
+        <input type="text" id="adminUser" placeholder="Masukkan username" required autocomplete="username">
       </div>
       <div class="form-group">
         <label>Password</label>
-        <input type="password" id="adminPass" placeholder="Masukkan password" required>
+        <input type="password" id="adminPass" placeholder="Masukkan password" required autocomplete="current-password">
       </div>
-      <button type="submit">Masuk ke Dashboard →</button>
+      <button type="submit" id="loginBtn">Masuk ke Dashboard →</button>
     </form>
     <div class="hint">💡 Default: <b>admin</b> / <b>admin123</b></div>
   </div>
@@ -391,17 +354,15 @@
   </aside>
 
   <main class="main-content">
-    <!-- DASHBOARD -->
     <div id="page-dashboard">
       <div class="page-header">
         <h1>📊 Dashboard</h1>
         <div style="color:#999;font-size:14px" id="currentDate"></div>
       </div>
 
-      <!-- Banner error Firestore -->
       <div class="firestore-banner" id="firestoreBanner">
         <b>⚠️ Gagal terhubung ke Firestore!</b><br>
-        Pastikan Firestore Rules sudah diatur ke <code>allow read, write: if true;</code><br>
+        Pastikan Firestore Rules sudah diatur ke <code style="background:#fff;padding:3px 8px;border-radius:5px;color:#d63384">allow read, write: if true;</code><br>
         Buka: <a href="https://console.firebase.google.com/project/babycare-shop-bf6bc/firestore/rules" target="_blank" style="color:#856404;font-weight:600">Firebase Console → Firestore → Rules</a>
       </div>
 
@@ -441,7 +402,6 @@
         <div id="recentOrders"></div>
       </div>
 
-      <!-- Tombol seed default products -->
       <div style="margin-top:20px;text-align:center">
         <button onclick="seedDefaults()" style="background:#f39c12;color:white;border:none;padding:12px 25px;border-radius:10px;cursor:pointer;font-weight:600">
           🌱 Isi Produk Contoh (12 Produk)
@@ -452,7 +412,6 @@
       </div>
     </div>
 
-    <!-- PRODUCTS -->
     <div id="page-products" style="display:none">
       <div class="page-header">
         <h1>📦 Manajemen Produk</h1>
@@ -481,7 +440,6 @@
       </div>
     </div>
 
-    <!-- ORDERS -->
     <div id="page-orders" style="display:none">
       <div class="page-header"><h1>🛍️ Manajemen Pesanan</h1></div>
       <div class="table-container">
@@ -514,7 +472,7 @@
   <div class="modal-content">
     <button class="close-btn" onclick="closeModal('productModal')">×</button>
     <h2 id="productModalTitle">➕ Tambah Produk</h2>
-    <form onsubmit="saveProduct(event)">
+    <form id="productForm">
       <input type="hidden" id="productId">
 
       <div class="form-group">
@@ -531,13 +489,10 @@
               📷 Ambil Foto
             </button>
           </div>
-          <div class="upload-hint">
-            Format: JPG, PNG, WEBP • Maks 2MB<br>
-            Foto otomatis dikompres agar hemat penyimpanan
-          </div>
+          <div class="upload-hint">Format: JPG, PNG, WEBP • Maks 2MB</div>
         </div>
-        <input type="file" id="fileGallery" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
-        <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display:none" onchange="handleFileSelect(event)">
+        <input type="file" id="fileGallery" accept="image/*" style="display:none">
+        <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display:none">
       </div>
 
       <div class="form-group">
@@ -595,29 +550,77 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- SCRIPT MODULE UNTUK FIREBASE -->
 <script type="module">
 import {
   fbGetProducts, fbAddProduct, fbUpdateProduct, fbDeleteProduct,
   fbGetOrders, fbUpdateOrder, fbSeedDefaultProducts
 } from './firebase-config.js';
 
-// ========== AUTH ==========
+// Expose functions ke window
+window.fbGetProducts = fbGetProducts;
+window.fbAddProduct = fbAddProduct;
+window.fbUpdateProduct = fbUpdateProduct;
+window.fbDeleteProduct = fbDeleteProduct;
+window.fbGetOrders = fbGetOrders;
+window.fbUpdateOrder = fbUpdateOrder;
+window.fbSeedDefaultProducts = fbSeedDefaultProducts;
+
+// Dispatch event agar script utama tahu module sudah ready
+window.dispatchEvent(new Event('firebase-ready'));
+console.log('✅ Firebase module loaded');
+</script>
+
+<!-- SCRIPT UTAMA (NON-MODULE, agar bisa dipanggil dari onclick) -->
+<script>
+// ========== STATE ==========
+let products = [];
+let orders = [];
+let currentImageData = '';
+let firebaseReady = false;
+
+// ========== FIREBASE READY ==========
+window.addEventListener('firebase-ready', () => {
+  firebaseReady = true;
+  console.log('🔥 Firebase functions ready');
+  
+  // Auto-login jika session ada
+  if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+    autoLogin();
+  }
+});
+
+// ========== AUTO LOGIN ==========
+function autoLogin() {
+  console.log('🔑 Auto-login dari session');
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminLayout').classList.add('active');
+  initAdmin();
+}
+
+// ========== LOGIN ==========
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin123';
 
-function adminLogin(e) {
+document.getElementById('loginFormAdmin').addEventListener('submit', function(e) {
   e.preventDefault();
-  const u = document.getElementById('adminUser').value;
-  const p = document.getElementById('adminPass').value;
+  console.log('🔐 Login attempt...');
+  
+  const u = document.getElementById('adminUser').value.trim();
+  const p = document.getElementById('adminPass').value.trim();
+  
   if (u === ADMIN_USER && p === ADMIN_PASS) {
     sessionStorage.setItem('adminLoggedIn', 'true');
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminLayout').classList.add('active');
+    console.log('✅ Login success');
+    showToast('✅ Login berhasil!');
     initAdmin();
   } else {
+    console.log('❌ Login failed');
     showToast('❌ Username atau password salah!', true);
   }
-}
+});
 
 function logout() {
   if (!confirm('Yakin ingin logout?')) return;
@@ -625,26 +628,22 @@ function logout() {
   location.reload();
 }
 
-// ========== STATE ==========
-let products = [];
-let orders = [];
-let currentImageData = '';
-
-// ========== LOADING ==========
-function showLoading(text = 'Memuat...') {
-  document.getElementById('loadingText').textContent = text;
-  document.getElementById('loadingOverlay').classList.add('active');
-}
-function hideLoading() {
-  document.getElementById('loadingOverlay').classList.remove('active');
-}
-
-// ========== INIT ==========
+// ========== INIT ADMIN ==========
 async function initAdmin() {
   const date = new Date();
   document.getElementById('currentDate').textContent =
     date.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  setupDragDrop();
+  
+  // Tunggu firebase ready
+  if (!firebaseReady) {
+    console.log('⏳ Waiting firebase ready...');
+    await new Promise(resolve => {
+      const check = setInterval(() => {
+        if (firebaseReady) { clearInterval(check); resolve(); }
+      }, 100);
+    });
+  }
+  
   await loadAll();
 }
 
@@ -652,13 +651,14 @@ async function loadAll() {
   showLoading('Memuat data dari server...');
   const banner = document.getElementById('firestoreBanner');
   try {
-    products = await fbGetProducts();
-    orders = await fbGetOrders();
+    products = await window.fbGetProducts();
+    orders = await window.fbGetOrders();
     banner.classList.remove('active');
     updateStats();
     renderProductTable();
     renderOrderTable();
     renderRecentOrders();
+    console.log(`✅ Loaded ${products.length} products, ${orders.length} orders`);
   } catch (err) {
     console.error('Error loading data:', err);
     banner.classList.add('active');
@@ -668,12 +668,12 @@ async function loadAll() {
   }
 }
 
-// ========== SEED DEFAULT PRODUCTS ==========
+// ========== SEED ==========
 async function seedDefaults() {
   if (!confirm('Isi 12 produk contoh ke database?\n\nHanya akan diisi jika database masih kosong.')) return;
   try {
     showLoading('Mengisi produk contoh...');
-    const result = await fbSeedDefaultProducts();
+    const result = await window.fbSeedDefaultProducts();
     if (result.seeded) {
       showToast(`✅ ${result.count} produk berhasil ditambahkan!`);
     } else {
@@ -688,6 +688,7 @@ async function seedDefaults() {
   }
 }
 
+// ========== STATS ==========
 function updateStats() {
   const revenue = orders.filter(o =>
     o.status === 'Sudah Dibayar' || o.status === 'Dikirim' || o.status === 'Selesai'
@@ -711,7 +712,7 @@ function showPage(page, el) {
   if (page === 'orders') renderOrderTable();
 }
 
-// ========== PRODUCTS TABLE ==========
+// ========== RENDER PRODUCTS ==========
 function renderProductTable(filter = '') {
   let filtered = products;
   if (filter) filtered = filtered.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
@@ -783,6 +784,9 @@ function removeImage() {
   showToast('🗑️ Foto dihapus');
 }
 
+document.getElementById('fileGallery').addEventListener('change', handleFileSelect);
+document.getElementById('fileCamera').addEventListener('change', handleFileSelect);
+
 function handleFileSelect(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -832,40 +836,8 @@ function compressImage(dataUrl, maxWidth, quality, callback) {
   img.src = dataUrl;
 }
 
-function setupDragDrop() {
-  const section = document.getElementById('uploadSection');
-  if (!section) return;
-  ['dragenter', 'dragover'].forEach(evt => {
-    section.addEventListener(evt, (e) => { e.preventDefault(); section.classList.add('dragover'); });
-  });
-  ['dragleave', 'drop'].forEach(evt => {
-    section.addEventListener(evt, (e) => { e.preventDefault(); section.classList.remove('dragover'); });
-  });
-  section.addEventListener('drop', (e) => {
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) handleDroppedFile(file);
-  });
-}
-
-function handleDroppedFile(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    compressImage(e.target.result, 800, 0.7, (compressedData) => {
-      currentImageData = compressedData;
-      renderImagePreview();
-      showToast('✅ Foto berhasil diupload');
-    });
-  };
-  reader.readAsDataURL(file);
-}
-
 // ========== SAVE PRODUCT ==========
-function editProduct(id) {
-  const p = products.find(x => x.id === id);
-  if (p) openProductModal(p);
-}
-
-async function saveProduct(e) {
+document.getElementById('productForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const id = document.getElementById('productId').value;
   const data = {
@@ -883,13 +855,13 @@ async function saveProduct(e) {
   try {
     showLoading('Menyimpan produk...');
     if (id) {
-      await fbUpdateProduct(id, data);
+      await window.fbUpdateProduct(id, data);
       showToast('✅ Produk berhasil diupdate!');
     } else {
-      await fbAddProduct(data);
+      await window.fbAddProduct(data);
       showToast('✅ Produk berhasil ditambahkan!');
     }
-    products = await fbGetProducts();
+    products = await window.fbGetProducts();
     closeModal('productModal');
     renderProductTable();
     updateStats();
@@ -899,14 +871,19 @@ async function saveProduct(e) {
   } finally {
     hideLoading();
   }
+});
+
+function editProduct(id) {
+  const p = products.find(x => x.id === id);
+  if (p) openProductModal(p);
 }
 
 async function deleteProduct(id) {
   if (!confirm('Yakin ingin menghapus produk ini?')) return;
   try {
     showLoading('Menghapus produk...');
-    await fbDeleteProduct(id);
-    products = await fbGetProducts();
+    await window.fbDeleteProduct(id);
+    products = await window.fbGetProducts();
     renderProductTable();
     updateStats();
     showToast('🗑️ Produk dihapus');
@@ -998,11 +975,6 @@ function viewOrder(id) {
       <span>Total:</span>
       <span style="color:var(--primary)">Rp ${o.total.toLocaleString('id-ID')}</span>
     </div>
-    <div style="margin-top:15px;background:#e8f5e9;padding:15px;border-radius:10px;text-align:center">
-      <div style="font-size:13px;color:#666;margin-bottom:8px">Bukti Pembayaran QRIS</div>
-      <img src="qris.png" alt="QRIS" style="max-width:180px;border-radius:10px;background:white;padding:8px"
-           onerror="this.style.display='none'">
-    </div>
   `;
   openModal('orderModal');
 }
@@ -1016,8 +988,8 @@ async function changeOrderStatus(id) {
   if (!confirm(`Ubah status pesanan ${o.orderId}?\n\nDari: ${o.status}\nKe: ${nextStatus}`)) return;
   try {
     showLoading('Mengubah status...');
-    await fbUpdateOrder(id, { status: nextStatus });
-    orders = await fbGetOrders();
+    await window.fbUpdateOrder(id, { status: nextStatus });
+    orders = await window.fbGetOrders();
     renderOrderTable();
     updateStats();
     renderRecentOrders();
@@ -1075,36 +1047,34 @@ function showToast(msg, isError = false) {
   t.className = 'toast show' + (isError ? ' error' : '');
   setTimeout(() => t.classList.remove('show'), 3500);
 }
+function showLoading(text) {
+  document.getElementById('loadingText').textContent = text;
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('active');
+}
+
 document.querySelectorAll('.modal').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); });
 });
 
-// ========== EXPOSE TO WINDOW ==========
-window.adminLogin = adminLogin;
-window.logout = logout;
+// ========== EXPOSE KE WINDOW ==========
 window.showPage = showPage;
 window.openProductModal = openProductModal;
 window.editProduct = editProduct;
-window.saveProduct = saveProduct;
 window.deleteProduct = deleteProduct;
 window.viewOrder = viewOrder;
 window.changeOrderStatus = changeOrderStatus;
 window.renderProductTable = renderProductTable;
 window.renderOrderTable = renderOrderTable;
-window.handleFileSelect = handleFileSelect;
 window.removeImage = removeImage;
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.seedDefaults = seedDefaults;
+window.logout = logout;
 
-// ========== CHECK LOGIN ==========
-window.addEventListener('DOMContentLoaded', () => {
-  if (sessionStorage.getItem('adminLoggedIn') === 'true') {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminLayout').classList.add('active');
-    initAdmin();
-  }
-});
+console.log('🚀 Admin page initialized');
 </script>
 </body>
- </html>
+</html>
