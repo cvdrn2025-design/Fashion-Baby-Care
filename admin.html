@@ -119,6 +119,9 @@
   .firestore-banner { display: none; background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 15px 20px; border-radius: 12px; margin-bottom: 20px; font-size: 13px; line-height: 1.6; }
   .firestore-banner.active { display: block; }
 
+  .login-box .hint.error { background: #fdecea; color: #c0392b; word-break: break-word; }
+  .sidebar nav a:focus-visible, button:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
   @media (max-width: 900px) {
     .sidebar { width: 70px; }
     .sidebar .brand { font-size: 14px; text-align: center; padding: 15px 5px; }
@@ -144,14 +147,14 @@
 </div>
 
 <!-- LOGIN SCREEN -->
-<div class="login-screen" id="loginScreen">
+<div class="login-screen" id="loginScreen" style="display:none">
   <div class="login-box">
     <h1>🔐 Admin Panel</h1>
     <p class="subtitle">BabyCare Shop Management</p>
     <form id="loginFormAdmin">
       <div class="form-group">
-        <label>Username</label>
-        <input type="text" id="adminUser" placeholder="Username" required autocomplete="username">
+        <label>Email Admin</label>
+        <input type="email" id="adminEmail" placeholder="admin@email.com" required autocomplete="username">
       </div>
       <div class="form-group">
         <label>Password</label>
@@ -159,7 +162,8 @@
       </div>
       <button type="submit" id="loginBtn">Masuk →</button>
     </form>
-    <div class="hint">💡 Default: <b>admin</b> / <b>admin123</b></div>
+    <div class="hint error" id="loginNotice" style="display:none"></div>
+    <div class="hint">💡 Gunakan akun Firebase yang sudah didaftarkan sebagai admin.</div>
   </div>
 </div>
 
@@ -168,11 +172,11 @@
   <aside class="sidebar">
     <div class="brand">🍼 Baby<span>Care</span></div>
     <nav>
-      <a onclick="showPage('dashboard', this)" class="active">📊 <span>Dashboard</span></a>
-      <a onclick="showPage('products', this)">📦 <span>Produk</span></a>
-      <a onclick="showPage('categories', this)">📂 <span>Kategori</span></a>
-      <a onclick="showPage('orders', this)">🛍️ <span>Pesanan</span></a>
-      <a onclick="window.open('index.html', '_blank')">🏪 <span>Lihat Toko</span></a>
+      <a href="#" data-page="dashboard" class="active">📊 <span>Dashboard</span></a>
+      <a href="#" data-page="products">📦 <span>Produk</span></a>
+      <a href="#" data-page="categories">📂 <span>Kategori</span></a>
+      <a href="#" data-page="orders">🛍️ <span>Pesanan</span></a>
+      <a href="index.html" target="_blank" rel="noopener">🏪 <span>Lihat Toko</span></a>
     </nav>
     <button class="logout-btn" onclick="logout()">🚪 Logout</button>
   </aside>
@@ -185,8 +189,8 @@
         <div style="color:#999;font-size:14px" id="currentDate"></div>
       </div>
       <div class="firestore-banner" id="firestoreBanner">
-        <b>⚠️ Gagal terhubung ke Firestore!</b><br>
-        Pastikan Firestore Rules: <code style="background:#fff;padding:3px 8px;border-radius:5px">allow read, write: if true;</code>
+        <b>⚠️ Gagal memuat data dari Firestore!</b><br>
+        Periksa koneksi internet, lalu pastikan <code style="background:#fff;padding:3px 8px;border-radius:5px">firestore.rules</code> sudah dipublikasikan dan akun ini punya dokumen <code style="background:#fff;padding:3px 8px;border-radius:5px">admins/{uid}</code>.
       </div>
       <div class="stats-grid">
         <div class="stat-card"><div><div class="stat-label">Total Produk</div><div class="stat-value" id="statProducts">0</div></div><div class="stat-icon">📦</div></div>
@@ -199,7 +203,7 @@
         <div id="recentOrders"></div>
       </div>
       <div style="margin-top:20px;text-align:center">
-        <button onclick="seedDefaults()" style="background:#f39c12;color:white;border:none;padding:12px 25px;border-radius:10px;cursor:pointer;font-weight:600">🌱 Isi Produk Contoh (12 Produk)</button>
+        <button onclick="seedDefaults()" style="background:#f39c12;color:white;border:none;padding:12px 25px;border-radius:10px;cursor:pointer;font-weight:600">🌱 Isi Kategori &amp; Produk Contoh</button>
       </div>
     </div>
 
@@ -285,7 +289,7 @@
             <button type="button" class="upload-btn btn-gallery" onclick="document.getElementById('fileGallery').click()">🖼️ Galeri</button>
             <button type="button" class="upload-btn btn-camera" onclick="document.getElementById('fileCamera').click()">📷 Kamera</button>
           </div>
-          <div class="upload-hint">JPG, PNG, WEBP • Maks 2MB</div>
+          <div class="upload-hint">JPG, PNG, WEBP • Maks 10MB (otomatis dikompres)</div>
         </div>
         <input type="file" id="fileGallery" accept="image/*" style="display:none">
         <input type="file" id="fileCamera" accept="image/*" capture="environment" style="display:none">
@@ -299,7 +303,7 @@
         <div class="form-group">
           <label>Kategori *</label>
           <select id="productCategory" required>
-            <!-- Diisi otomatis oleh JavaScript dari Firestore -->
+            <!-- Diisi otomatis oleh JavaScript -->
           </select>
         </div>
         <div class="form-group"><label>Stok *</label><input type="number" id="productStock" required min="0"></div>
@@ -396,152 +400,161 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE MODULE -->
 <script type="module">
 import {
+  fbOnAuthChange, fbAdminLogin, fbIsAdmin, fbLogout,
   fbGetProducts, fbAddProduct, fbUpdateProduct, fbDeleteProduct,
-  fbGetOrders, fbUpdateOrder, fbSeedDefaultProducts,
-  fbGetCategories, fbSeedCategories, fbAddCategory, fbUpdateCategory, fbDeleteCategory
+  fbGetOrders, fbSetOrderStatus, fbSeedDefaultProducts,
+  fbGetCategories, fbSeedCategories, fbAddCategory, fbDeleteCategory, fbUpdateCategoryAndProducts,
+  esc, rp, fmtDate, ORDER_STATUS, ORDER_STATUSES
 } from './firebase-config.js';
 
-window.fbGetProducts = fbGetProducts;
-window.fbAddProduct = fbAddProduct;
-window.fbUpdateProduct = fbUpdateProduct;
-window.fbDeleteProduct = fbDeleteProduct;
-window.fbGetOrders = fbGetOrders;
-window.fbUpdateOrder = fbUpdateOrder;
-window.fbSeedDefaultProducts = fbSeedDefaultProducts;
-window.fbGetCategories = fbGetCategories;
-window.fbSeedCategories = fbSeedCategories;
-window.fbAddCategory = fbAddCategory;
-window.fbUpdateCategory = fbUpdateCategory;
-window.fbDeleteCategory = fbDeleteCategory;
+// ========== HELPERS ==========
+const $ = (id) => document.getElementById(id);
 
-window.dispatchEvent(new Event('firebase-ready'));
-console.log('✅ Firebase module loaded');
-</script>
-
-<!-- MAIN SCRIPT -->
-<script>
 let products = [];
 let orders = [];
 let categories = [];
 let currentImageData = '';
-let firebaseReady = false;
+let adminUid = null;
+let dragDropReady = false;
+let toastTimer;
+const filters = { products: '', categories: '', orders: '' };
 
-// ========== CATEGORY HELPERS ==========
-function getCategoryBySlug(slug) {
-  return categories.find(c => c.slug === slug);
+const STATUS_BADGE = {
+  [ORDER_STATUS.PENDING]: 'badge-warning',
+  [ORDER_STATUS.PAID]: 'badge-info',
+  [ORDER_STATUS.SHIPPED]: 'badge-purple',
+  [ORDER_STATUS.DONE]: 'badge-success',
+  [ORDER_STATUS.CANCELLED]: 'badge-danger'
+};
+const statusBadge = (s) => `<span class="badge ${STATUS_BADGE[s] || 'badge-secondary'}">${esc(s)}</span>`;
+
+const getCategory = (slug) => categories.find(c => c.slug === slug);
+const getCategoryBadge = (slug) => getCategory(slug)?.badge || 'badge-info';
+const getCategoryLabel = (slug) => { const c = getCategory(slug); return c ? `${c.icon} ${c.name}` : slug; };
+
+function waLink(phone) {
+  let d = String(phone || '').replace(/\D/g, '');
+  if (d.startsWith('0')) d = '62' + d.slice(1);
+  else if (d.startsWith('8')) d = '62' + d;
+  return d.length >= 10 ? `https://wa.me/${d}` : '';
 }
 
-function getCategoryBadge(slug) {
-  const c = getCategoryBySlug(slug);
-  return c ? c.badge : 'badge-info';
+// ========== UI UTILS ==========
+function openModal(id) { $(id).classList.add('active'); }
+function closeModal(id) { $(id).classList.remove('active'); }
+function showToast(msg, isError = false) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
 }
+function showLoading(text) { $('loadingText').textContent = text; $('loadingOverlay').classList.add('active'); }
+function hideLoading() { $('loadingOverlay').classList.remove('active'); }
 
-function getCategoryLabel(slug) {
-  const c = getCategoryBySlug(slug);
-  return c ? `${c.icon} ${c.name}` : slug;
-}
-
-function updateCategoryDropdown() {
-  const select = document.getElementById('productCategory');
-  if (!select) return;
-  const currentValue = select.value;
-  select.innerHTML = categories.map(c => 
-    `<option value="${c.slug}">${c.icon} ${c.name}</option>`
-  ).join('');
-  if (currentValue) select.value = currentValue;
-}
-
-// ========== FIREBASE READY ==========
-window.addEventListener('firebase-ready', () => {
-  firebaseReady = true;
-  if (sessionStorage.getItem('adminLoggedIn') === 'true') autoLogin();
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); }));
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
 });
 
-function autoLogin() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('adminLayout').classList.add('active');
-  initAdmin();
+// ========== AUTH (Firebase Auth + dokumen admins/{uid}) ==========
+function showLogin(message) {
+  $('adminLayout').classList.remove('active');
+  $('loginScreen').style.display = 'flex';
+  const notice = $('loginNotice');
+  notice.textContent = message || '';
+  notice.style.display = message ? 'block' : 'none';
 }
 
-// ========== LOGIN ==========
-const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'admin123';
-
-document.getElementById('loginFormAdmin').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const u = document.getElementById('adminUser').value.trim();
-  const p = document.getElementById('adminPass').value.trim();
-  if (u === ADMIN_USER && p === ADMIN_PASS) {
-    sessionStorage.setItem('adminLoggedIn', 'true');
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminLayout').classList.add('active');
-    showToast('✅ Login berhasil!');
-    initAdmin();
+fbOnAuthChange(async (user) => {
+  if (user && await fbIsAdmin(user.uid)) {
+    if (adminUid === user.uid) return;
+    adminUid = user.uid;
+    $('loginScreen').style.display = 'none';
+    $('adminLayout').classList.add('active');
+    await initAdmin();
   } else {
-    showToast('❌ Username atau password salah!', true);
+    adminUid = null;
+    products = []; orders = []; categories = [];
+    // Jangan menimpa pesan error dari proses login yang baru saja gagal.
+    if ($('loginScreen').style.display === 'none' || !$('loginNotice').textContent) showLogin();
+    else $('loginScreen').style.display = 'flex';
   }
 });
 
-function logout() {
-  if (!confirm('Yakin ingin logout?')) return;
-  sessionStorage.removeItem('adminLoggedIn');
-  location.reload();
-}
+const LOGIN_ERRORS = {
+  'auth/user-not-found': 'Email belum terdaftar',
+  'auth/wrong-password': 'Email atau password salah',
+  'auth/invalid-credential': 'Email atau password salah',
+  'auth/invalid-email': 'Format email salah',
+  'auth/too-many-requests': 'Terlalu banyak percobaan, coba lagi nanti',
+  'auth/network-request-failed': 'Koneksi internet bermasalah'
+};
 
-// ========== INIT ==========
-async function initAdmin() {
-  document.getElementById('currentDate').textContent =
-    new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  setupDragDrop();
-  await loadCategories();
-  await loadAll();
-}
-
-async function loadCategories() {
+$('loginFormAdmin').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = $('loginBtn');
+  btn.disabled = true; btn.textContent = '⏳ Memproses...';
   try {
-    categories = await window.fbGetCategories();
-    if (categories.length === 0) {
-      console.log('📂 Seeding default categories...');
-      await window.fbSeedCategories();
-      categories = await window.fbGetCategories();
-    }
-    categories.sort((a, b) => (a.order || 99) - (b.order || 99));
-    console.log(`✅ ${categories.length} kategori dimuat`);
-  } catch (e) {
-    console.error('Load categories error:', e);
-    categories = [];
+    await fbAdminLogin($('adminEmail').value.trim(), $('adminPass').value);
+    $('loginFormAdmin').reset();
+    showToast('✅ Login berhasil!');
+  } catch (err) {
+    const msg = LOGIN_ERRORS[err.code] || err.message || 'Gagal masuk';
+    showLogin('❌ ' + msg);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Masuk →';
   }
-  updateCategoryDropdown();
+});
+
+async function logout() {
+  if (!confirm('Yakin ingin logout?')) return;
+  try { await fbLogout(); } catch (err) { showToast('❌ Gagal logout', true); }
+}
+
+// ========== INIT & LOAD ==========
+async function initAdmin() {
+  $('currentDate').textContent =
+    new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  if (!dragDropReady) { setupDragDrop(); dragDropReady = true; }
+  await loadAll();
 }
 
 async function loadAll() {
   showLoading('Memuat data...');
-  const banner = document.getElementById('firestoreBanner');
+  const banner = $('firestoreBanner');
   try {
-    products = await window.fbGetProducts();
-    orders = await window.fbGetOrders();
+    [categories, products, orders] = await Promise.all([fbGetCategories(), fbGetProducts(), fbGetOrders()]);
     banner.classList.remove('active');
-    updateStats();
-    renderProductTable();
-    renderOrderTable();
-    renderRecentOrders();
-    renderCategoryTable();
+    renderAll();
   } catch (err) {
+    console.error(err);
     banner.classList.add('active');
     showToast('❌ Gagal memuat: ' + err.message, true);
   } finally { hideLoading(); }
 }
 
-// ========== SEED ==========
+function renderAll() {
+  updateCategoryDropdown();
+  updateStats();
+  renderProductTable();
+  renderCategoryTable();
+  renderOrderTable();
+  renderRecentOrders();
+}
+
 async function seedDefaults() {
-  if (!confirm('Isi 12 produk contoh?')) return;
+  if (!confirm('Isi kategori & 12 produk contoh? (hanya berjalan jika datanya masih kosong)')) return;
   try {
-    showLoading('Mengisi produk...');
-    const result = await window.fbSeedDefaultProducts();
-    showToast(result.seeded ? `✅ ${result.count} produk ditambahkan!` : `ℹ️ Sudah ada ${result.count} produk`);
+    showLoading('Mengisi data contoh...');
+    const cat = await fbSeedCategories();
+    const prod = await fbSeedDefaultProducts();
+    const parts = [];
+    parts.push(cat.seeded ? `${cat.count} kategori ditambahkan` : `kategori sudah ada (${cat.count})`);
+    parts.push(prod.seeded ? `${prod.count} produk ditambahkan` : `produk sudah ada (${prod.count})`);
+    showToast('✅ ' + parts.join(', '));
     await loadAll();
   } catch (err) {
     showToast('❌ Gagal: ' + err.message, true);
@@ -550,156 +563,215 @@ async function seedDefaults() {
 
 // ========== STATS ==========
 function updateStats() {
-  const revenue = orders.filter(o => ['Sudah Dibayar', 'Dikirim', 'Selesai'].includes(o.status)).reduce((s, o) => s + (o.total || 0), 0);
-  const pending = orders.filter(o => !['Selesai', 'Dibatalkan'].includes(o.status)).length;
-  document.getElementById('statProducts').textContent = products.length;
-  document.getElementById('statOrders').textContent = orders.length;
-  document.getElementById('statRevenue').textContent = 'Rp ' + revenue.toLocaleString('id-ID');
-  document.getElementById('statPending').textContent = pending;
+  const revenue = orders
+    .filter(o => [ORDER_STATUS.PAID, ORDER_STATUS.SHIPPED, ORDER_STATUS.DONE].includes(o.status))
+    .reduce((s, o) => s + (Number(o.total) || 0), 0);
+  // "Perlu diproses" = menunggu verifikasi pembayaran + sudah dibayar tapi belum dikirim
+  const pending = orders.filter(o => [ORDER_STATUS.PENDING, ORDER_STATUS.PAID].includes(o.status)).length;
+  $('statProducts').textContent = products.length;
+  $('statOrders').textContent = orders.length;
+  $('statRevenue').textContent = rp(revenue);
+  $('statPending').textContent = pending;
 }
 
-// ========== NAVIGATION ==========
-function showPage(page, el) {
-  document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
-  el.classList.add('active');
+// ========== NAVIGASI ==========
+function showPage(page) {
+  document.querySelectorAll('.sidebar nav a[data-page]').forEach(a => a.classList.toggle('active', a.dataset.page === page));
   ['dashboard', 'products', 'orders', 'categories'].forEach(p => {
-    const el = document.getElementById('page-' + p);
-    if (el) el.style.display = p === page ? 'block' : 'none';
+    $('page-' + p).style.display = p === page ? 'block' : 'none';
   });
   if (page === 'dashboard') { updateStats(); renderRecentOrders(); }
   if (page === 'products') renderProductTable();
   if (page === 'orders') renderOrderTable();
   if (page === 'categories') renderCategoryTable();
 }
+document.querySelectorAll('.sidebar nav a[data-page]').forEach(a => {
+  a.addEventListener('click', (e) => { e.preventDefault(); showPage(a.dataset.page); });
+});
 
-// ========== PRODUCT TABLE ==========
-function renderProductTable(filter = '') {
-  let filtered = products;
-  if (filter) filtered = filtered.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
-  const tbody = document.getElementById('productTableBody');
+// Satu pengendali klik untuk tombol pada tabel/modal hasil render.
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.act) {
+    case 'edit-product': editProduct(id); break;
+    case 'delete-product': deleteProduct(id); break;
+    case 'edit-category': editCategory(id); break;
+    case 'delete-category': deleteCategory(id); break;
+    case 'view-order': viewOrder(id); break;
+    case 'save-status': saveOrderStatus(id); break;
+    case 'remove-image': removeImage(); break;
+  }
+});
+
+// ========== KATEGORI (helper form) ==========
+function updateCategoryDropdown() {
+  const select = $('productCategory');
+  const current = select.value;
+  select.innerHTML = categories.map(c => `<option value="${esc(c.slug)}">${esc(c.icon)} ${esc(c.name)}</option>`).join('');
+  if (current) select.value = current;
+}
+
+// ========== PRODUK ==========
+function renderProductTable(filter) {
+  if (filter !== undefined) filters.products = filter;
+  const q = filters.products.trim().toLowerCase();
+  const filtered = q ? products.filter(p => String(p.name || '').toLowerCase().includes(q)) : products;
+  const tbody = $('productTableBody');
   if (filtered.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" class="empty"><div class="emoji">📦</div>Tidak ada produk</td></tr>';
     return;
   }
   tbody.innerHTML = filtered.map(p => {
-    let stockBadge = p.stock > 10 ? 'badge-success' : p.stock > 0 ? 'badge-warning' : 'badge-danger';
-    const imgHTML = p.image ? `<img src="${p.image}" class="table-img" alt="${p.name}">` : `<div class="table-img">${p.emoji || '📦'}</div>`;
+    const stock = Number(p.stock) || 0;
+    const stockBadge = stock > 10 ? 'badge-success' : stock > 0 ? 'badge-warning' : 'badge-danger';
+    const img = p.image
+      ? `<img src="${esc(p.image)}" class="table-img" alt="${esc(p.name)}">`
+      : `<div class="table-img">${esc(p.emoji || '📦')}</div>`;
     return `<tr>
-      <td>${imgHTML}</td>
-      <td><div style="font-weight:600;font-size:13px">${p.name}</div><div style="color:#999;font-size:12px">⭐ ${p.rating || 4.5}</div></td>
-      <td><span class="badge ${getCategoryBadge(p.category)}">${getCategoryLabel(p.category)}</span></td>
-      <td><b style="color:var(--primary)">Rp ${p.price.toLocaleString('id-ID')}</b>${p.oldPrice ? `<div style="font-size:12px;color:#999;text-decoration:line-through">Rp ${p.oldPrice.toLocaleString('id-ID')}</div>` : ''}</td>
-      <td><span class="badge ${stockBadge}">${p.stock}</span></td>
+      <td>${img}</td>
+      <td><div style="font-weight:600;font-size:13px">${esc(p.name)}</div><div style="color:#999;font-size:12px">⭐ ${esc(p.rating || 4.5)}</div></td>
+      <td><span class="badge ${esc(getCategoryBadge(p.category))}">${esc(getCategoryLabel(p.category))}</span></td>
+      <td><b style="color:var(--primary)">${rp(p.price)}</b>${p.oldPrice ? `<div style="font-size:12px;color:#999;text-decoration:line-through">${rp(p.oldPrice)}</div>` : ''}</td>
+      <td><span class="badge ${stockBadge}">${stock}</span></td>
       <td><div class="action-btns">
-        <button class="btn-icon btn-edit" onclick="editProduct('${p.id}')">✏️ Edit</button>
-        <button class="btn-icon btn-delete" onclick="deleteProduct('${p.id}')">🗑️ Hapus</button>
+        <button class="btn-icon btn-edit" data-act="edit-product" data-id="${esc(p.id)}">✏️ Edit</button>
+        <button class="btn-icon btn-delete" data-act="delete-product" data-id="${esc(p.id)}">🗑️ Hapus</button>
       </div></td>
     </tr>`;
   }).join('');
 }
 
-// ========== PRODUCT MODAL ==========
 function openProductModal(product = null) {
-  document.getElementById('productModalTitle').textContent = product ? '✏️ Edit Produk' : '➕ Tambah Produk';
-  document.getElementById('productId').value = product ? product.id : '';
-  document.getElementById('productName').value = product ? product.name : '';
-  document.getElementById('productPrice').value = product ? product.price : '';
-  document.getElementById('productOldPrice').value = product ? product.oldPrice : '';
-  document.getElementById('productCategory').value = product ? product.category : (categories[0]?.slug || 'baju');
-  document.getElementById('productStock').value = product ? product.stock : '';
-  document.getElementById('productRating').value = product ? product.rating : 4.5;
-  document.getElementById('productDesc').value = product ? product.desc : '';
-  currentImageData = product && product.image ? product.image : '';
+  $('productModalTitle').textContent = product ? '✏️ Edit Produk' : '➕ Tambah Produk';
+  $('productId').value = product ? product.id : '';
+  $('productName').value = product?.name ?? '';
+  $('productPrice').value = product?.price ?? '';
+  $('productOldPrice').value = product?.oldPrice || '';
+  $('productStock').value = product?.stock ?? '';
+  $('productRating').value = product?.rating ?? 4.5;
+  $('productDesc').value = product?.desc ?? '';
+
+  updateCategoryDropdown();
+  const select = $('productCategory');
+  // Kategori produk sudah dihapus? Tetap tampilkan agar form tidak macet.
+  if (product?.category && !getCategory(product.category)) {
+    select.insertAdjacentHTML('afterbegin', `<option value="${esc(product.category)}">⚠️ ${esc(product.category)} (kategori dihapus)</option>`);
+  }
+  select.value = product?.category || categories[0]?.slug || '';
+
+  currentImageData = product?.image || '';
   renderImagePreview();
   openModal('productModal');
 }
 
 function renderImagePreview() {
-  const preview = document.getElementById('uploadPreview');
-  if (currentImageData) {
-    preview.innerHTML = `<img src="${currentImageData}"><button type="button" class="remove-img" onclick="removeImage()">×</button>`;
-  } else {
-    preview.innerHTML = '<div class="placeholder">📷</div>';
-  }
+  $('uploadPreview').innerHTML = currentImageData
+    ? `<img src="${esc(currentImageData)}" alt="Foto produk"><button type="button" class="remove-img" data-act="remove-image">×</button>`
+    : '<div class="placeholder">📷</div>';
 }
-
 function removeImage() { currentImageData = ''; renderImagePreview(); }
 
-document.getElementById('fileGallery').addEventListener('change', handleFileSelect);
-document.getElementById('fileCamera').addEventListener('change', handleFileSelect);
-
-function handleFileSelect(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  if (!file.type.startsWith('image/')) return showToast('❌ Bukan gambar', true);
-  if (file.size > 10 * 1024 * 1024) return showToast('❌ Max 10MB', true);
-  const preview = document.getElementById('uploadPreview');
-  preview.innerHTML = '<div style="text-align:center;padding-top:60px;font-size:30px">⏳</div>';
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    compressImage(e.target.result, 800, 0.7, (compressed) => {
-      currentImageData = compressed;
-      renderImagePreview();
-      showToast('✅ Foto siap');
-    });
-  };
-  reader.readAsDataURL(file);
-  event.target.value = '';
-}
-
-function compressImage(dataUrl, maxWidth, quality, callback) {
-  const img = new Image();
-  img.onload = () => {
-    const canvas = document.createElement('canvas');
-    let width = img.width, height = img.height;
-    if (width > maxWidth) { height = (height * maxWidth) / width; width = maxWidth; }
-    canvas.width = width; canvas.height = height;
-    canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-    callback(canvas.toDataURL('image/jpeg', quality));
-  };
-  img.src = dataUrl;
-}
-
-function setupDragDrop() {
-  const section = document.getElementById('uploadSection');
-  if (!section) return;
-  ['dragenter', 'dragover'].forEach(evt => section.addEventListener(evt, e => e.preventDefault()));
-  section.addEventListener('drop', e => {
-    e.preventDefault();
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (ev) => compressImage(ev.target.result, 800, 0.7, (c) => { currentImageData = c; renderImagePreview(); });
-      reader.readAsDataURL(file);
-    }
+// Kompres bertahap agar dokumen Firestore (maks 1 MB) tidak terlampaui.
+const MAX_IMAGE_CHARS = 600000;
+function compressImage(dataUrl) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onerror = () => reject(new Error('Gambar tidak bisa dibaca'));
+    img.onload = () => {
+      const attempts = [[800, 0.7], [800, 0.5], [640, 0.5], [480, 0.4]];
+      let result = '';
+      for (const [maxWidth, quality] of attempts) {
+        const scale = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#fff'; // PNG transparan → latar putih (bukan hitam)
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        result = canvas.toDataURL('image/jpeg', quality);
+        if (result.length <= MAX_IMAGE_CHARS) break;
+      }
+      if (result.length > MAX_IMAGE_CHARS) reject(new Error('Foto terlalu besar, pilih foto lain'));
+      else resolve(result);
+    };
+    img.src = dataUrl;
   });
 }
 
-// ========== SAVE PRODUCT ==========
-document.getElementById('productForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const id = document.getElementById('productId').value;
-  const data = {
-    name: document.getElementById('productName').value,
-    price: parseInt(document.getElementById('productPrice').value),
-    oldPrice: parseInt(document.getElementById('productOldPrice').value) || 0,
-    category: document.getElementById('productCategory').value,
-    stock: parseInt(document.getElementById('productStock').value),
-    image: currentImageData,
-    emoji: currentImageData ? '' : '📦',
-    rating: parseFloat(document.getElementById('productRating').value) || 4.5,
-    desc: document.getElementById('productDesc').value,
+function processImageFile(file) {
+  if (!file) return;
+  if (!file.type.startsWith('image/')) return showToast('❌ Bukan gambar', true);
+  if (file.size > 10 * 1024 * 1024) return showToast('❌ Maksimal 10MB', true);
+  $('uploadPreview').innerHTML = '<div style="text-align:center;padding-top:60px;font-size:30px">⏳</div>';
+  const reader = new FileReader();
+  reader.onerror = () => { renderImagePreview(); showToast('❌ Gagal membaca file', true); };
+  reader.onload = async (e) => {
+    try {
+      currentImageData = await compressImage(e.target.result);
+      showToast('✅ Foto siap');
+    } catch (err) {
+      showToast('❌ ' + err.message, true);
+    }
+    renderImagePreview();
   };
+  reader.readAsDataURL(file);
+}
+
+['fileGallery', 'fileCamera'].forEach(id => {
+  $(id).addEventListener('change', (e) => {
+    processImageFile(e.target.files[0]);
+    e.target.value = '';
+  });
+});
+
+function setupDragDrop() {
+  const section = $('uploadSection');
+  ['dragenter', 'dragover'].forEach(evt => section.addEventListener(evt, e => e.preventDefault()));
+  section.addEventListener('drop', e => {
+    e.preventDefault();
+    processImageFile(e.dataTransfer.files[0]);
+  });
+}
+
+$('productForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = $('productId').value;
+  const existing = id ? products.find(p => p.id === id) : null;
+
+  const name = $('productName').value.trim();
+  const price = parseInt($('productPrice').value, 10);
+  const oldPrice = parseInt($('productOldPrice').value, 10) || 0;
+  const stock = parseInt($('productStock').value, 10);
+  const category = $('productCategory').value;
+  const ratingInput = parseFloat($('productRating').value);
+
+  if (!name) return showToast('❌ Nama produk wajib diisi', true);
+  if (!Number.isFinite(price) || price < 0) return showToast('❌ Harga tidak valid', true);
+  if (!Number.isFinite(stock) || stock < 0) return showToast('❌ Stok tidak valid', true);
+  if (oldPrice && oldPrice < price) return showToast('❌ Harga asli harus ≥ harga jual', true);
+  if (!category) return showToast('❌ Pilih kategori dulu (buat kategori di menu Kategori)', true);
+
+  const data = {
+    name, price, oldPrice, category, stock,
+    image: currentImageData,
+    emoji: currentImageData ? '' : (existing?.emoji || '📦'),
+    rating: Number.isFinite(ratingInput) ? Math.min(5, Math.max(0, ratingInput)) : 4.5,
+    desc: $('productDesc').value.trim()
+  };
+
   try {
     showLoading('Menyimpan...');
-    if (id) await window.fbUpdateProduct(id, data);
-    else await window.fbAddProduct(data);
-    products = await window.fbGetProducts();
+    if (id) await fbUpdateProduct(id, data);
+    else await fbAddProduct(data);
+    products = await fbGetProducts();
     closeModal('productModal');
-    renderProductTable();
-    updateStats();
+    renderProductTable(); renderCategoryTable(); updateStats();
     showToast(id ? '✅ Produk diupdate!' : '✅ Produk ditambahkan!');
   } catch (err) {
+    console.error(err);
     showToast('❌ Gagal: ' + err.message, true);
   } finally { hideLoading(); }
 });
@@ -713,64 +785,52 @@ async function deleteProduct(id) {
   if (!confirm('Hapus produk ini?')) return;
   try {
     showLoading('Menghapus...');
-    await window.fbDeleteProduct(id);
-    products = await window.fbGetProducts();
-    renderProductTable();
-    updateStats();
+    await fbDeleteProduct(id);
+    products = await fbGetProducts();
+    renderProductTable(); renderCategoryTable(); updateStats();
     showToast('🗑️ Produk dihapus');
-  } catch (err) { showToast('❌ Gagal', true); }
-  finally { hideLoading(); }
+  } catch (err) {
+    console.error(err);
+    showToast('❌ Gagal menghapus: ' + err.message, true);
+  } finally { hideLoading(); }
 }
 
-// ========== CATEGORY CRUD ==========
-function renderCategoryTable(filter = '') {
-  let filtered = categories;
-  if (filter) filtered = filtered.filter(c => 
-    c.name.toLowerCase().includes(filter.toLowerCase()) ||
-    c.slug.toLowerCase().includes(filter.toLowerCase())
-  );
-  
-  const tbody = document.getElementById('categoryTableBody');
-  if (!tbody) return;
-  
+// ========== KATEGORI ==========
+function renderCategoryTable(filter) {
+  if (filter !== undefined) filters.categories = filter;
+  const q = filters.categories.trim().toLowerCase();
+  const filtered = q
+    ? categories.filter(c => String(c.name || '').toLowerCase().includes(q) || String(c.slug || '').toLowerCase().includes(q))
+    : categories;
+  const tbody = $('categoryTableBody');
   if (filtered.length === 0) {
     tbody.innerHTML = '<tr><td colspan="5" class="empty"><div class="emoji">📂</div>Belum ada kategori</td></tr>';
     return;
   }
-  
   tbody.innerHTML = filtered.map(c => {
     const count = products.filter(p => p.category === c.slug).length;
-    return `
-      <tr>
-        <td style="font-size:28px;text-align:center">${c.icon}</td>
-        <td>
-          <div style="font-weight:600;font-size:14px">${c.name}</div>
-          <div style="font-size:12px;color:#999">${c.subLabel || '-'}</div>
-        </td>
-        <td><code style="background:#f5f5f5;padding:3px 8px;border-radius:5px;font-size:12px">${c.slug}</code></td>
-        <td>
-          <span class="badge ${c.badge || 'badge-info'}">${count} produk</span>
-        </td>
-        <td>
-          <div class="action-btns">
-            <button class="btn-icon btn-edit" onclick="editCategory('${c.id}')">✏️ Edit</button>
-            <button class="btn-icon btn-delete" onclick="deleteCategory('${c.id}', '${c.name.replace(/'/g, "\\'")}')">🗑️ Hapus</button>
-          </div>
-        </td>
-      </tr>
-    `;
+    return `<tr>
+      <td style="font-size:28px;text-align:center">${esc(c.icon)}</td>
+      <td><div style="font-weight:600;font-size:14px">${esc(c.name)}</div><div style="font-size:12px;color:#999">${esc(c.subLabel || '-')}</div></td>
+      <td><code style="background:#f5f5f5;padding:3px 8px;border-radius:5px;font-size:12px">${esc(c.slug)}</code></td>
+      <td><span class="badge ${esc(c.badge || 'badge-info')}">${count} produk</span></td>
+      <td><div class="action-btns">
+        <button class="btn-icon btn-edit" data-act="edit-category" data-id="${esc(c.id)}">✏️ Edit</button>
+        <button class="btn-icon btn-delete" data-act="delete-category" data-id="${esc(c.id)}">🗑️ Hapus</button>
+      </div></td>
+    </tr>`;
   }).join('');
 }
 
 function openCategoryModal(category = null) {
-  document.getElementById('categoryModalTitle').textContent = category ? '✏️ Edit Kategori' : '➕ Tambah Kategori';
-  document.getElementById('categoryOriginalSlug').value = category ? category.slug : '';
-  document.getElementById('categoryIcon').value = category ? category.icon : '';
-  document.getElementById('categoryName').value = category ? category.name : '';
-  document.getElementById('categorySlug').value = category ? category.slug : '';
-  document.getElementById('categorySubLabel').value = category ? (category.subLabel || '') : '';
-  document.getElementById('categoryBadge').value = category ? (category.badge || 'badge-info') : 'badge-info';
-  document.getElementById('categoryOrder').value = category ? (category.order || 99) : 99;
+  $('categoryModalTitle').textContent = category ? '✏️ Edit Kategori' : '➕ Tambah Kategori';
+  $('categoryOriginalSlug').value = category ? category.slug : '';
+  $('categoryIcon').value = category?.icon ?? '';
+  $('categoryName').value = category?.name ?? '';
+  $('categorySlug').value = category?.slug ?? '';
+  $('categorySubLabel').value = category?.subLabel ?? '';
+  $('categoryBadge').value = category?.badge || 'badge-info';
+  $('categoryOrder').value = category?.order ?? 99;
   openModal('categoryModal');
 }
 
@@ -779,176 +839,177 @@ function editCategory(id) {
   if (c) openCategoryModal(c);
 }
 
-function pickIcon(icon) {
-  document.getElementById('categoryIcon').value = icon;
-}
+function pickIcon(icon) { $('categoryIcon').value = icon; }
 
 function autoSlug() {
-  if (document.getElementById('categoryOriginalSlug').value) return;
-  const name = document.getElementById('categoryName').value;
-  const slug = name.toLowerCase()
+  if ($('categoryOriginalSlug').value) return; // slug kategori lama tidak diubah otomatis
+  $('categorySlug').value = $('categoryName').value
+    .toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-    .trim();
-  document.getElementById('categorySlug').value = slug;
+    .replace(/^-|-$/g, '');
 }
 
 async function saveCategory(e) {
   e.preventDefault();
-  const originalSlug = document.getElementById('categoryOriginalSlug').value;
+  const originalSlug = $('categoryOriginalSlug').value;
+  const orderInput = parseInt($('categoryOrder').value, 10);
   const data = {
-    icon: document.getElementById('categoryIcon').value.trim(),
-    name: document.getElementById('categoryName').value.trim(),
-    slug: document.getElementById('categorySlug').value.trim().toLowerCase(),
-    subLabel: document.getElementById('categorySubLabel').value.trim(),
-    badge: document.getElementById('categoryBadge').value,
-    order: parseInt(document.getElementById('categoryOrder').value) || 99
+    icon: $('categoryIcon').value.trim(),
+    name: $('categoryName').value.trim(),
+    slug: $('categorySlug').value.trim().toLowerCase(),
+    subLabel: $('categorySubLabel').value.trim(),
+    badge: $('categoryBadge').value,
+    order: Number.isFinite(orderInput) ? orderInput : 99
   };
-  
-  if (!/^[a-z0-9\-]+$/.test(data.slug)) {
-    return showToast('❌ Slug hanya huruf kecil, angka, dan tanda minus', true);
-  }
-  
-  const existing = categories.find(c => c.slug === data.slug && c.slug !== originalSlug);
-  if (existing) {
+
+  if (!/^[a-z0-9-]+$/.test(data.slug)) return showToast('❌ Slug hanya huruf kecil, angka, dan tanda minus', true);
+  if (data.slug === 'all') return showToast('❌ Slug "all" dipakai sistem, pilih yang lain', true);
+  if (categories.some(c => c.slug === data.slug && c.slug !== originalSlug)) {
     return showToast('❌ Slug sudah dipakai kategori lain', true);
   }
-  
+
   try {
     showLoading('Menyimpan...');
-    
     if (originalSlug) {
       const cat = categories.find(c => c.slug === originalSlug);
       if (!cat) throw new Error('Kategori tidak ditemukan');
-      await window.fbUpdateCategory(cat.id, data);
-      
-      if (data.slug !== originalSlug) {
-        const affectedProducts = products.filter(p => p.category === originalSlug);
-        for (const p of affectedProducts) {
-          await window.fbUpdateProduct(p.id, { category: data.slug });
-        }
-      }
+      await fbUpdateCategoryAndProducts(cat.id, data, originalSlug); // ubah slug + pindahkan produk, atomik
       showToast('✅ Kategori diupdate!');
     } else {
-      await window.fbAddCategory(data);
+      await fbAddCategory(data);
       showToast('✅ Kategori ditambahkan!');
     }
-    
-    await loadCategories();
-    products = await window.fbGetProducts();
-    renderCategoryTable();
-    renderProductTable();
-    updateStats();
+    [categories, products] = await Promise.all([fbGetCategories(), fbGetProducts()]);
+    updateCategoryDropdown();
+    renderCategoryTable(); renderProductTable(); updateStats();
     closeModal('categoryModal');
-    e.target.reset();
   } catch (err) {
     console.error(err);
     showToast('❌ Gagal: ' + err.message, true);
   } finally { hideLoading(); }
 }
 
-async function deleteCategory(id, name) {
+async function deleteCategory(id) {
   const cat = categories.find(x => x.id === id);
   if (!cat) return;
-  
-  const productCount = products.filter(p => p.category === cat.slug).length;
-  
-  let msg = `Hapus kategori "${name}"?`;
-  if (productCount > 0) {
-    msg += `\n\n⚠️ Ada ${productCount} produk dengan kategori ini.\nProduk tersebut akan tetap ada, tapi kategorinya tidak akan tampil di dropdown.`;
+  const count = products.filter(p => p.category === cat.slug).length;
+  let msg = `Hapus kategori "${cat.name}"?`;
+  if (count > 0) {
+    msg += `\n\n⚠️ Ada ${count} produk dengan kategori ini.\nProduk tetap ada, tapi tidak bisa difilter lewat dropdown kategori di toko.`;
   }
-  
   if (!confirm(msg)) return;
-  
   try {
     showLoading('Menghapus...');
-    await window.fbDeleteCategory(id);
-    await loadCategories();
-    renderCategoryTable();
-    updateStats();
+    await fbDeleteCategory(id);
+    categories = await fbGetCategories();
+    updateCategoryDropdown();
+    renderCategoryTable(); renderProductTable();
     showToast('🗑️ Kategori dihapus');
   } catch (err) {
+    console.error(err);
     showToast('❌ Gagal: ' + err.message, true);
   } finally { hideLoading(); }
 }
 
-// ========== ORDER TABLE ==========
-function renderOrderTable(filter = '') {
-  let filtered = orders;
-  if (filter) filtered = filtered.filter(o => (o.orderId || '').toLowerCase().includes(filter.toLowerCase()) || (o.customer || '').toLowerCase().includes(filter.toLowerCase()));
-  const tbody = document.getElementById('orderTableBody');
+// ========== PESANAN ==========
+function renderOrderTable(filter) {
+  if (filter !== undefined) filters.orders = filter;
+  const q = filters.orders.trim().toLowerCase();
+  const filtered = q
+    ? orders.filter(o => String(o.orderId || '').toLowerCase().includes(q) || String(o.customer || '').toLowerCase().includes(q))
+    : orders;
+  const tbody = $('orderTableBody');
   if (filtered.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" class="empty"><div class="emoji">🛍️</div>Belum ada pesanan</td></tr>';
     return;
   }
-  const statusMap = { 'Menunggu Pembayaran': 'badge-warning', 'Sudah Dibayar': 'badge-info', 'Dikirim': 'badge-info', 'Selesai': 'badge-success', 'Dibatalkan': 'badge-danger' };
-  tbody.innerHTML = filtered.map(o => {
-    const dateStr = o.date?.seconds ? new Date(o.date.seconds * 1000).toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '-';
-    return `<tr>
-      <td><b style="color:var(--primary)">${o.orderId}</b></td>
-      <td><div style="font-weight:600;font-size:13px">${o.customer}</div><div style="color:#999;font-size:12px">${o.phone}</div></td>
-      <td><b>Rp ${o.total.toLocaleString('id-ID')}</b></td>
-      <td><span class="badge ${statusMap[o.status] || 'badge-secondary'}">${o.status}</span></td>
-      <td style="font-size:12px">${dateStr}</td>
-      <td><div class="action-btns">
-        <button class="btn-icon btn-view" onclick="viewOrder('${o.id}')">👁️</button>
-        <button class="btn-icon btn-edit" onclick="changeOrderStatus('${o.id}')">🔄</button>
-      </div></td>
-    </tr>`;
-  }).join('');
+  tbody.innerHTML = filtered.map(o => `<tr>
+      <td><b style="color:var(--primary)">${esc(o.orderId)}</b></td>
+      <td><div style="font-weight:600;font-size:13px">${esc(o.customer)}</div><div style="color:#999;font-size:12px">${esc(o.phone)}</div></td>
+      <td><b>${rp(o.total)}</b></td>
+      <td>${statusBadge(o.status)}</td>
+      <td style="font-size:12px">${fmtDate(o.date)}</td>
+      <td><div class="action-btns"><button class="btn-icon btn-view" data-act="view-order" data-id="${esc(o.id)}">👁️ Detail</button></div></td>
+    </tr>`).join('');
 }
 
 function viewOrder(id) {
   const o = orders.find(x => x.id === id);
   if (!o) return;
-  const dateStr = o.date?.seconds ? new Date(o.date.seconds * 1000).toLocaleString('id-ID') : '-';
-  document.getElementById('orderDetailContent').innerHTML = `
+  const box = 'background:#f8f9fb;padding:12px;border-radius:10px';
+  const label = 'font-size:12px;color:#999';
+  const wa = waLink(o.phone);
+  const cancelled = o.status === ORDER_STATUS.CANCELLED;
+
+  const itemsHTML = (o.items || []).map(item => {
+    const image = item.image || products.find(p => p.id === item.id)?.image;
+    const thumb = image ? `<img src="${esc(image)}" style="width:100%;height:100%;object-fit:cover">` : esc(item.emoji || '📦');
+    return `
+      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee;align-items:center">
+        <div style="width:50px;height:50px;background:#ffd6e7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden">${thumb}</div>
+        <div style="flex:1"><div style="font-weight:600;font-size:14px">${esc(item.name)}</div><div style="font-size:13px;color:#666">${esc(item.qty)} × ${rp(item.price)}</div></div>
+        <div style="font-weight:bold;color:var(--primary)">${rp(item.qty * item.price)}</div>
+      </div>`;
+  }).join('');
+
+  $('orderDetailContent').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px">
-      <div style="background:#f8f9fb;padding:12px;border-radius:10px"><div style="font-size:12px;color:#999">No. Pesanan</div><div style="font-weight:600;color:var(--primary)">${o.orderId}</div></div>
-      <div style="background:#f8f9fb;padding:12px;border-radius:10px"><div style="font-size:12px;color:#999">Status</div><div style="font-weight:600">${o.status}</div></div>
-      <div style="background:#f8f9fb;padding:12px;border-radius:10px"><div style="font-size:12px;color:#999">Pelanggan</div><div style="font-weight:600">${o.customer}</div></div>
-      <div style="background:#f8f9fb;padding:12px;border-radius:10px"><div style="font-size:12px;color:#999">HP</div><div style="font-weight:600">${o.phone}</div></div>
-      <div style="background:#f8f9fb;padding:12px;border-radius:10px;grid-column:1/-1"><div style="font-size:12px;color:#999">Alamat</div><div style="font-weight:600">${o.address}, ${o.city}</div></div>
-      ${o.userEmail && o.userEmail !== 'guest' ? `<div style="background:#f8f9fb;padding:12px;border-radius:10px;grid-column:1/-1"><div style="font-size:12px;color:#999">Email Akun</div><div style="font-weight:600">${o.userEmail}</div></div>` : '<div style="background:#fff9e6;padding:12px;border-radius:10px;grid-column:1/-1;font-size:12px;color:#856404">👤 Guest Checkout (tanpa login)</div>'}
-      <div style="background:#f8f9fb;padding:12px;border-radius:10px"><div style="font-size:12px;color:#999">Pembayaran</div><div style="font-weight:600">💳 ${o.payment || 'QRIS'}</div></div>
-      <div style="background:#f8f9fb;padding:12px;border-radius:10px"><div style="font-size:12px;color:#999">Tanggal</div><div style="font-weight:600">${dateStr}</div></div>
+      <div style="${box}"><div style="${label}">No. Pesanan</div><div style="font-weight:600;color:var(--primary)">${esc(o.orderId)}</div></div>
+      <div style="${box}"><div style="${label}">Status</div><div>${statusBadge(o.status)}</div></div>
+      <div style="${box}"><div style="${label}">Pelanggan</div><div style="font-weight:600">${esc(o.customer)}</div></div>
+      <div style="${box}"><div style="${label}">HP</div><div style="font-weight:600">${esc(o.phone)}</div>${wa ? `<a href="${wa}" target="_blank" rel="noopener" style="font-size:12px;color:#25d366;font-weight:600">💬 Hubungi via WhatsApp</a>` : ''}</div>
+      <div style="${box};grid-column:1/-1"><div style="${label}">Alamat</div><div style="font-weight:600">${esc(o.address)}, ${esc(o.city)}</div></div>
+      ${o.note ? `<div style="background:#fff9e6;padding:12px;border-radius:10px;grid-column:1/-1"><div style="${label}">Catatan Pelanggan</div><div style="font-weight:600">${esc(o.note)}</div></div>` : ''}
+      ${o.userEmail && o.userEmail !== 'guest'
+        ? `<div style="${box};grid-column:1/-1"><div style="${label}">Email Akun</div><div style="font-weight:600">${esc(o.userEmail)}</div></div>`
+        : '<div style="background:#fff9e6;padding:12px;border-radius:10px;grid-column:1/-1;font-size:12px;color:#856404">👤 Guest Checkout (tanpa login)</div>'}
+      <div style="${box}"><div style="${label}">Pembayaran</div><div style="font-weight:600">💳 ${esc(o.payment || 'QRIS')}</div></div>
+      <div style="${box}"><div style="${label}">Tanggal</div><div style="font-weight:600">${fmtDate(o.date)}</div></div>
     </div>
     <h3 style="margin-bottom:10px">🛒 Item Pesanan</h3>
-    ${o.items.map(item => `
-      <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee;align-items:center">
-        <div style="width:50px;height:50px;background:#ffd6e7;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden">
-          ${item.image ? `<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">` : item.emoji}
-        </div>
-        <div style="flex:1"><div style="font-weight:600;font-size:14px">${item.name}</div><div style="font-size:13px;color:#666">${item.qty} × Rp ${item.price.toLocaleString('id-ID')}</div></div>
-        <div style="font-weight:bold;color:var(--primary)">Rp ${(item.qty * item.price).toLocaleString('id-ID')}</div>
-      </div>
-    `).join('')}
+    ${itemsHTML}
     <div style="display:flex;justify-content:space-between;padding:15px 0;border-top:2px dashed #eee;font-size:20px;font-weight:bold">
-      <span>Total:</span><span style="color:var(--primary)">Rp ${o.total.toLocaleString('id-ID')}</span>
-    </div>`;
+      <span>Total:</span><span style="color:var(--primary)">${rp(o.total)}</span>
+    </div>
+    <div class="form-group" style="margin-top:10px">
+      <label>Ubah Status</label>
+      <select id="orderStatusSelect" ${cancelled ? 'disabled' : ''}>
+        ${ORDER_STATUSES.map(s => `<option value="${esc(s)}" ${s === o.status ? 'selected' : ''}>${esc(s)}</option>`).join('')}
+      </select>
+      <small style="color:#999;font-size:12px;display:block;margin-top:5px">
+        ${cancelled ? 'Pesanan yang dibatalkan tidak bisa dibuka kembali.' : 'Memilih "Dibatalkan" akan mengembalikan stok produk dan tidak bisa diurungkan.'}
+      </small>
+    </div>
+    ${cancelled ? '' : `<button type="button" class="btn-submit" data-act="save-status" data-id="${esc(o.id)}">💾 Simpan Status</button>`}`;
   openModal('orderModal');
 }
 
-async function changeOrderStatus(id) {
+async function saveOrderStatus(id) {
   const o = orders.find(x => x.id === id);
   if (!o) return;
-  const statuses = ['Menunggu Pembayaran', 'Sudah Dibayar', 'Dikirim', 'Selesai', 'Dibatalkan'];
-  const nextStatus = statuses[(statuses.indexOf(o.status) + 1) % statuses.length];
-  if (!confirm(`Ubah status ${o.orderId}?\n\nDari: ${o.status}\nKe: ${nextStatus}`)) return;
+  const next = $('orderStatusSelect').value;
+  if (next === o.status) return showToast('ℹ️ Status tidak berubah');
+  if (!confirm(`Ubah status ${o.orderId}?\n\nDari: ${o.status}\nKe: ${next}`)) return;
   try {
-    showLoading('Mengubah...');
-    await window.fbUpdateOrder(id, { status: nextStatus });
-    orders = await window.fbGetOrders();
-    renderOrderTable(); updateStats(); renderRecentOrders();
-    showToast(`✅ Status: ${nextStatus}`);
-  } catch (err) { showToast('❌ Gagal', true); }
-  finally { hideLoading(); }
+    showLoading('Mengubah status...');
+    await fbSetOrderStatus(id, next);
+    [orders, products] = await Promise.all([fbGetOrders(), fbGetProducts()]); // stok bisa berubah saat dibatalkan
+    closeModal('orderModal');
+    renderOrderTable(); renderRecentOrders(); renderProductTable(); updateStats();
+    showToast(`✅ Status: ${next}`);
+  } catch (err) {
+    console.error(err);
+    showToast('❌ ' + err.message, true);
+  } finally { hideLoading(); }
 }
 
 function renderRecentOrders() {
   const recent = orders.slice(0, 5);
-  const container = document.getElementById('recentOrders');
+  const container = $('recentOrders');
   if (recent.length === 0) {
     container.innerHTML = '<div class="empty"><div class="emoji">📭</div>Belum ada pesanan</div>';
     return;
@@ -956,61 +1017,29 @@ function renderRecentOrders() {
   container.innerHTML = `<table>
     <thead><tr><th>No. Pesanan</th><th>Pelanggan</th><th>Total</th><th>Status</th><th>Tanggal</th></tr></thead>
     <tbody>
-      ${recent.map(o => {
-        const dateStr = o.date?.seconds ? new Date(o.date.seconds * 1000).toLocaleDateString('id-ID') : '-';
-        return `<tr>
-          <td><b style="color:var(--primary)">${o.orderId}</b></td>
-          <td>${o.customer}</td>
-          <td><b>Rp ${o.total.toLocaleString('id-ID')}</b></td>
-          <td><span class="badge badge-info">${o.status}</span></td>
-          <td style="font-size:12px">${dateStr}</td>
-        </tr>`;
-      }).join('')}
+      ${recent.map(o => `<tr>
+        <td><b style="color:var(--primary)">${esc(o.orderId)}</b></td>
+        <td>${esc(o.customer)}</td>
+        <td><b>${rp(o.total)}</b></td>
+        <td>${statusBadge(o.status)}</td>
+        <td style="font-size:12px">${fmtDate(o.date, { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+      </tr>`).join('')}
     </tbody>
   </table>`;
 }
-
-// ========== UTILS ==========
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function showToast(msg, isError = false) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (isError ? ' error' : '');
-  setTimeout(() => t.classList.remove('show'), 3500);
-}
-function showLoading(text) { document.getElementById('loadingText').textContent = text; document.getElementById('loadingOverlay').classList.add('active'); }
-function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
-document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
-
-// ========== EXPOSE ==========
-window.showPage = showPage;
-window.openProductModal = openProductModal;
-window.editProduct = editProduct;
-window.deleteProduct = deleteProduct;
-window.viewOrder = viewOrder;
-window.changeOrderStatus = changeOrderStatus;
-window.renderProductTable = renderProductTable;
-window.renderOrderTable = renderOrderTable;
-window.renderCategoryTable = renderCategoryTable;
-window.openCategoryModal = openCategoryModal;
-window.editCategory = editCategory;
-window.saveCategory = saveCategory;
-window.deleteCategory = deleteCategory;
-window.pickIcon = pickIcon;
-window.autoSlug = autoSlug;
-window.removeImage = removeImage;
-window.openModal = openModal;
-window.closeModal = closeModal;
-window.seedDefaults = seedDefaults;
-window.logout = logout;
 
 // ========== SERVICE WORKER ==========
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
 }
 
-console.log('🚀 Admin loaded');
+// ========== EXPOSE (hanya yang dipanggil dari atribut HTML statis) ==========
+Object.assign(window, {
+  openProductModal, openCategoryModal, saveCategory, pickIcon, autoSlug,
+  renderProductTable, renderCategoryTable, renderOrderTable,
+  openModal, closeModal, seedDefaults, logout
+});
 </script>
 </body>
-         </html>
+</html>
+
