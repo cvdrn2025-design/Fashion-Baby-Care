@@ -2,7 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
-  query, orderBy, serverTimestamp, writeBatch, where, setDoc
+  query, serverTimestamp, writeBatch, where, setDoc, runTransaction
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
@@ -21,6 +21,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+
+// ========== SHARED HELPERS (dipakai index.html & admin.html) ==========
+const HTML_ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+
+/** Escape teks sebelum disisipkan ke innerHTML / atribut HTML. */
+export const esc = (v) => String(v ?? '').replace(/[&<>"']/g, ch => HTML_ESCAPES[ch]);
+
+/** Format angka ke Rupiah. */
+export const rp = (n) => 'Rp ' + (Number(n) || 0).toLocaleString('id-ID');
+
+/** Format Firestore Timestamp ke teks tanggal Indonesia. */
+export function fmtDate(ts, options) {
+  const d = ts?.toDate ? ts.toDate() : (ts?.seconds ? new Date(ts.seconds * 1000) : null);
+  if (!d) return '-';
+  return d.toLocaleDateString('id-ID', options || {
+    day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+  });
+}
+
+export const ORDER_STATUS = Object.freeze({
+  PENDING: 'Menunggu Pembayaran',
+  PAID: 'Sudah Dibayar',
+  SHIPPED: 'Dikirim',
+  DONE: 'Selesai',
+  CANCELLED: 'Dibatalkan'
+});
+export const ORDER_STATUSES = Object.values(ORDER_STATUS);
+
+const clean = (v, max) => String(v ?? '').trim().slice(0, max);
+const byNewest = (field) => (a, b) => (b[field]?.seconds || 0) - (a[field]?.seconds || 0);
+const failWith = (code, message) => Object.assign(new Error(message), { code });
 
 // ========== AUTH ==========
 export function fbOnAuthChange(callback) {
@@ -55,6 +86,29 @@ export async function fbResetPassword(email) {
   await sendPasswordResetEmail(auth, email);
 }
 
+// ========== ADMIN ==========
+// Admin = akun Firebase Auth yang punya dokumen admins/{uid} (dibuat manual lewat Firebase Console).
+export async function fbIsAdmin(uid) {
+  if (!uid) return false;
+  try {
+    const snap = await getDoc(doc(db, "admins", uid));
+    return snap.exists();
+  } catch (e) {
+    console.warn('fbIsAdmin error:', e);
+    return false;
+  }
+}
+
+export async function fbAdminLogin(email, password) {
+  const cred = await signInWithEmailAndPassword(auth, email, password);
+  if (!(await fbIsAdmin(cred.user.uid))) {
+    const uid = cred.user.uid;
+    await signOut(auth);
+    throw failWith('admin/not-admin', `Akun ini belum terdaftar sebagai admin (UID: ${uid})`);
+  }
+  return cred.user;
+}
+
 // ========== USERS ==========
 export async function fbGetUserProfile(uid) {
   const snap = await getDoc(doc(db, "users", uid));
@@ -63,23 +117,16 @@ export async function fbGetUserProfile(uid) {
 
 export async function fbUpdateUserProfile(uid, data) {
   await setDoc(doc(db, "users", uid), data, { merge: true });
+  // Sinkronkan nama tampilan di Firebase Auth agar konsisten di semua tempat.
+  if (data.displayName && auth.currentUser?.uid === uid) {
+    await updateProfile(auth.currentUser, { displayName: data.displayName });
+  }
 }
 
 // ========== PRODUCTS ==========
 export async function fbGetProducts() {
-  try {
-    const snap = await getDocs(collection(db, "products"));
-    const products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    products.sort((a, b) => {
-      const ta = a.createdAt?.seconds || 0;
-      const tb = b.createdAt?.seconds || 0;
-      return tb - ta;
-    });
-    return products;
-  } catch (e) {
-    console.error('fbGetProducts error:', e);
-    throw e;
-  }
+  const snap = await getDocs(collection(db, "products"));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort(byNewest('createdAt'));
 }
 
 export async function fbAddProduct(data) {
@@ -100,16 +147,10 @@ export async function fbDeleteProduct(id) {
 
 // ========== CATEGORIES ==========
 export async function fbGetCategories() {
-  try {
-    const snap = await getDocs(collection(db, "categories"));
-    if (snap.empty) return [];
-    const cats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    cats.sort((a, b) => (a.order || 99) - (b.order || 99));
-    return cats;
-  } catch (e) {
-    console.error('fbGetCategories error:', e);
-    return [];
-  }
+  const snap = await getDocs(collection(db, "categories"));
+  return snap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
 }
 
 const DEFAULT_CATEGORIES = [
@@ -125,13 +166,13 @@ const DEFAULT_CATEGORIES = [
   { slug: 'stroller', name: 'Stroller & Car Seat', icon: '🚼', subLabel: 'Kereta Bayi', badge: 'badge-purple', order: 10 }
 ];
 
+// ID dokumen = slug, jadi seed dua kali tidak pernah membuat duplikat.
 export async function fbSeedCategories() {
   const existing = await fbGetCategories();
   if (existing.length > 0) return { seeded: false, count: existing.length };
   const batch = writeBatch(db);
   DEFAULT_CATEGORIES.forEach(cat => {
-    const ref = doc(collection(db, "categories"));
-    batch.set(ref, { ...cat, createdAt: serverTimestamp() });
+    batch.set(doc(db, "categories", cat.slug), { ...cat, createdAt: serverTimestamp() });
   });
   await batch.commit();
   return { seeded: true, count: DEFAULT_CATEGORIES.length };
@@ -149,52 +190,122 @@ export async function fbUpdateCategory(id, data) {
   });
 }
 
+/** Ubah kategori + pindahkan semua produknya ke slug baru dalam satu batch (atomik). */
+export async function fbUpdateCategoryAndProducts(id, data, oldSlug) {
+  const batch = writeBatch(db);
+  batch.update(doc(db, "categories", id), { ...data, updatedAt: serverTimestamp() });
+  if (oldSlug && data.slug && data.slug !== oldSlug) {
+    const snap = await getDocs(query(collection(db, "products"), where("category", "==", oldSlug)));
+    if (snap.size > 480) throw new Error('Terlalu banyak produk pada kategori ini untuk diganti sekaligus');
+    snap.docs.forEach(d => batch.update(d.ref, { category: data.slug }));
+  }
+  await batch.commit();
+}
+
 export async function fbDeleteCategory(id) {
   return await deleteDoc(doc(db, "categories", id));
 }
 
 // ========== ORDERS ==========
 export async function fbGetOrders() {
-  try {
-    const snap = await getDocs(collection(db, "orders"));
-    const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    orders.sort((a, b) => {
-      const ta = a.date?.seconds || 0;
-      const tb = b.date?.seconds || 0;
-      return tb - ta;
-    });
-    return orders;
-  } catch (e) {
-    console.error('fbGetOrders error:', e);
-    throw e;
-  }
+  const snap = await getDocs(collection(db, "orders"));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort(byNewest('date'));
 }
 
 export async function fbGetUserOrders(uid) {
-  try {
-    const q = query(collection(db, "orders"), where("userId", "==", uid));
-    const snap = await getDocs(q);
-    const orders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    orders.sort((a, b) => {
-      const ta = a.date?.seconds || 0;
-      const tb = b.date?.seconds || 0;
-      return tb - ta;
-    });
-    return orders;
-  } catch (e) {
-    console.error('fbGetUserOrders error:', e);
-    return [];
-  }
+  const snap = await getDocs(query(collection(db, "orders"), where("userId", "==", uid)));
+  return snap.docs.map(d => ({ id: d.id, ...d.data() })).sort(byNewest('date'));
 }
 
-export async function fbAddOrder(data) {
-  return await addDoc(collection(db, "orders"), {
-    ...data, date: serverTimestamp()
+/**
+ * Buat pesanan secara atomik: cek stok, kurangi stok, dan simpan pesanan dalam satu transaksi.
+ * Harga & nama produk diambil dari database (bukan dari klien).
+ * input: { orderId, customer, phone, address, city, note, items: [{id, qty}], expectedTotal? }
+ */
+export async function fbPlaceOrder(input) {
+  const merged = new Map();
+  (input.items || []).forEach(i => {
+    const qty = Math.floor(Number(i.qty));
+    if (i.id && qty > 0) merged.set(i.id, (merged.get(i.id) || 0) + qty);
+  });
+  const items = [...merged].map(([id, qty]) => ({ id, qty }));
+  if (!items.length) throw failWith('order/empty', 'Keranjang kosong');
+
+  const customer = clean(input.customer, 100);
+  const phone = clean(input.phone, 25);
+  const address = clean(input.address, 400);
+  const city = clean(input.city, 80);
+  if (!customer || !phone || !address || !city) {
+    throw failWith('order/invalid', 'Data pengiriman belum lengkap');
+  }
+
+  const user = auth.currentUser;
+  const orderRef = doc(collection(db, "orders"));
+
+  return runTransaction(db, async (tx) => {
+    // Semua pembacaan harus dilakukan sebelum penulisan.
+    const snaps = await Promise.all(items.map(i => tx.get(doc(db, "products", i.id))));
+    let total = 0;
+    const lines = snaps.map((snap, idx) => {
+      if (!snap.exists()) throw failWith('order/not-found', 'Ada produk yang sudah tidak tersedia');
+      const p = snap.data();
+      const qty = items[idx].qty;
+      const stock = Number(p.stock) || 0;
+      if (stock < qty) throw failWith('order/out-of-stock', `Stok "${p.name}" tidak cukup (sisa ${stock})`);
+      const price = Number(p.price) || 0;
+      total += price * qty;
+      return { id: snap.id, name: p.name || 'Produk', price, qty, emoji: p.emoji || '📦', newStock: stock - qty };
+    });
+
+    if (typeof input.expectedTotal === 'number' && input.expectedTotal !== total) {
+      throw failWith('order/price-changed', 'Harga produk berubah. Silakan periksa keranjang kembali');
+    }
+
+    lines.forEach(l => tx.update(doc(db, "products", l.id), { stock: l.newStock }));
+
+    // Gambar produk sengaja tidak disimpan di pesanan (base64 bisa membuat dokumen melebihi batas 1 MB).
+    const orderItems = lines.map(({ newStock, ...rest }) => rest);
+    tx.set(orderRef, {
+      orderId: clean(input.orderId, 20),
+      userId: user ? user.uid : 'guest',
+      userEmail: user ? user.email : 'guest',
+      customer, phone, address, city,
+      note: clean(input.note, 300),
+      items: orderItems,
+      total,
+      status: ORDER_STATUS.PENDING,
+      payment: 'QRIS',
+      date: serverTimestamp()
+    });
+
+    return { id: orderRef.id, orderId: clean(input.orderId, 20), total, items: orderItems };
   });
 }
 
-export async function fbUpdateOrder(id, data) {
-  return await updateDoc(doc(db, "orders", id), data);
+/** Ubah status pesanan. Membatalkan pesanan otomatis mengembalikan stok. Status "Dibatalkan" bersifat final. */
+export async function fbSetOrderStatus(id, newStatus) {
+  if (!ORDER_STATUSES.includes(newStatus)) throw new Error('Status tidak valid');
+  const orderRef = doc(db, "orders", id);
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(orderRef);
+    if (!snap.exists()) throw new Error('Pesanan tidak ditemukan');
+    const order = snap.data();
+    if (order.status === newStatus) return;
+    if (order.status === ORDER_STATUS.CANCELLED) {
+      throw new Error('Pesanan yang sudah dibatalkan tidak bisa dibuka kembali');
+    }
+
+    if (newStatus === ORDER_STATUS.CANCELLED) {
+      const items = order.items || [];
+      const productSnaps = await Promise.all(items.map(i => tx.get(doc(db, "products", i.id))));
+      productSnaps.forEach((ps, idx) => {
+        if (ps.exists()) {
+          tx.update(ps.ref, { stock: (Number(ps.data().stock) || 0) + (Number(items[idx].qty) || 0) });
+        }
+      });
+    }
+    tx.update(orderRef, { status: newStatus, statusUpdatedAt: serverTimestamp() });
+  });
 }
 
 export async function fbDeleteOrder(id) {
@@ -203,13 +314,8 @@ export async function fbDeleteOrder(id) {
 
 // ========== WISHLIST ==========
 export async function fbGetWishlist(uid) {
-  try {
-    const snap = await getDoc(doc(db, "wishlists", uid));
-    return snap.exists() ? (snap.data().items || []) : [];
-  } catch (e) {
-    console.error('fbGetWishlist error:', e);
-    return [];
-  }
+  const snap = await getDoc(doc(db, "wishlists", uid));
+  return snap.exists() ? (snap.data().items || []) : [];
 }
 
 export async function fbSaveWishlist(uid, items) {
@@ -232,16 +338,17 @@ const DEFAULT_PRODUCTS = [
   { name: "Sandal Bayi Karakter Lucu Import", price: 65000, oldPrice: 85000, category: "sepatu", emoji: "🩴", image: "", rating: 4.6, stock: 32, desc: "Sandal karakter lucu, bahan karet lembut tidak licin." },
 ];
 
+// ID dokumen tetap (seed-1, seed-2, ...) agar seed ganda tidak membuat produk duplikat.
 export async function fbSeedDefaultProducts() {
   const existing = await fbGetProducts();
   if (existing.length > 0) return { seeded: false, count: existing.length };
   const batch = writeBatch(db);
-  DEFAULT_PRODUCTS.forEach(p => {
-    const ref = doc(collection(db, "products"));
-    batch.set(ref, { ...p, createdAt: serverTimestamp() });
+  DEFAULT_PRODUCTS.forEach((p, i) => {
+    batch.set(doc(db, "products", `seed-${i + 1}`), { ...p, createdAt: serverTimestamp() });
   });
   await batch.commit();
   return { seeded: true, count: DEFAULT_PRODUCTS.length };
 }
 
 export { db, auth };
+
