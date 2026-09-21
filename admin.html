@@ -23,7 +23,6 @@
   .login-box input:focus { border-color: var(--primary); }
   .login-box button { width: 100%; background: var(--primary); color: white; border: none; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
   .login-box button:hover { background: #e5517f; }
-  .login-box button:disabled { background: #ccc; cursor: not-allowed; }
   .login-box .hint { text-align: center; margin-top: 15px; font-size: 12px; color: #999; background: #f9f9f9; padding: 10px; border-radius: 8px; }
 
   .admin-layout { display: none; min-height: 100vh; }
@@ -67,6 +66,8 @@
   .badge-danger { background: #f8d7da; color: #721c24; }
   .badge-info { background: #d1ecf1; color: #0c5460; }
   .badge-secondary { background: #e2e3e5; color: #383d41; }
+  .badge-pink { background: #fce4ec; color: #c2185b; }
+  .badge-purple { background: #ede7f6; color: #5e35b1; }
 
   .action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
   .btn-icon { padding: 8px 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
@@ -98,6 +99,9 @@
   .btn-camera { background: var(--info); color: white; }
   .upload-hint { font-size: 12px; color: #999; margin-top: 12px; }
   .table-img { width: 50px; height: 50px; border-radius: 10px; object-fit: cover; background: #ffd6e7; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+  .icon-pick { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; font-size: 18px; border: 2px solid #eee; border-radius: 8px; cursor: pointer; transition: .2s; background: white; user-select: none; }
+  .icon-pick:hover { border-color: var(--primary); background: #fff5f9; transform: scale(1.1); }
 
   .toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 14px 25px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); transform: translateX(400px); opacity: 0; transition: .4s; z-index: 2000; font-weight: 600; max-width: 350px; }
   .toast.show { transform: translateX(0); opacity: 1; }
@@ -166,6 +170,7 @@
     <nav>
       <a onclick="showPage('dashboard', this)" class="active">📊 <span>Dashboard</span></a>
       <a onclick="showPage('products', this)">📦 <span>Produk</span></a>
+      <a onclick="showPage('categories', this)">📂 <span>Kategori</span></a>
       <a onclick="showPage('orders', this)">🛍️ <span>Pesanan</span></a>
       <a onclick="window.open('index.html', '_blank')">🏪 <span>Lihat Toko</span></a>
     </nav>
@@ -173,6 +178,7 @@
   </aside>
 
   <main class="main-content">
+    <!-- DASHBOARD -->
     <div id="page-dashboard">
       <div class="page-header">
         <h1>📊 Dashboard</h1>
@@ -197,6 +203,7 @@
       </div>
     </div>
 
+    <!-- PRODUCTS -->
     <div id="page-products" style="display:none">
       <div class="page-header">
         <h1>📦 Manajemen Produk</h1>
@@ -216,6 +223,35 @@
       </div>
     </div>
 
+    <!-- CATEGORIES -->
+    <div id="page-categories" style="display:none">
+      <div class="page-header">
+        <h1>📂 Manajemen Kategori</h1>
+        <button class="btn-primary" onclick="openCategoryModal()">➕ Tambah Kategori</button>
+      </div>
+      <div class="table-container">
+        <div class="table-header">
+          <h3>Daftar Kategori</h3>
+          <input type="text" class="filter-input" placeholder="🔍 Cari kategori..." oninput="renderCategoryTable(this.value)">
+        </div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Icon</th>
+                <th>Nama Kategori</th>
+                <th>Slug (ID)</th>
+                <th>Jumlah Produk</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="categoryTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
     <div id="page-orders" style="display:none">
       <div class="page-header"><h1>🛍️ Manajemen Pesanan</h1></div>
       <div class="table-container">
@@ -263,12 +299,7 @@
         <div class="form-group">
           <label>Kategori *</label>
           <select id="productCategory" required>
-            <option value="baju">👕 Baju Bayi</option>
-            <option value="celana">👖 Celana</option>
-            <option value="aksesoris">🎀 Aksesoris</option>
-            <option value="perawatan">🧴 Perawatan</option>
-            <option value="mainan">🧸 Mainan</option>
-            <option value="sepatu">👟 Sepatu</option>
+            <!-- Diisi otomatis oleh JavaScript dari Firestore -->
           </select>
         </div>
         <div class="form-group"><label>Stok *</label><input type="number" id="productStock" required min="0"></div>
@@ -276,6 +307,80 @@
       <div class="form-group"><label>Rating (1-5)</label><input type="number" id="productRating" min="0" max="5" step="0.1" value="4.5"></div>
       <div class="form-group"><label>Deskripsi</label><textarea rows="3" id="productDesc"></textarea></div>
       <button type="submit" class="btn-submit">💾 Simpan Produk</button>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL CATEGORY FORM -->
+<div class="modal" id="categoryModal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal('categoryModal')">×</button>
+    <h2 id="categoryModalTitle">➕ Tambah Kategori</h2>
+    <form onsubmit="saveCategory(event)">
+      <input type="hidden" id="categoryOriginalSlug">
+      
+      <div class="form-group">
+        <label>Icon (Emoji) *</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input type="text" id="categoryIcon" required maxlength="4" placeholder="👕" style="font-size:24px;text-align:center;flex:0 0 80px">
+          <div style="flex:1;display:flex;gap:6px;flex-wrap:wrap;min-width:200px">
+            <span class="icon-pick" onclick="pickIcon('👕')">👕</span>
+            <span class="icon-pick" onclick="pickIcon('👖')">👖</span>
+            <span class="icon-pick" onclick="pickIcon('🎀')">🎀</span>
+            <span class="icon-pick" onclick="pickIcon('🧴')">🧴</span>
+            <span class="icon-pick" onclick="pickIcon('🧸')">🧸</span>
+            <span class="icon-pick" onclick="pickIcon('👟')">👟</span>
+            <span class="icon-pick" onclick="pickIcon('🍼')">🍼</span>
+            <span class="icon-pick" onclick="pickIcon('🍽️')">🍽️</span>
+            <span class="icon-pick" onclick="pickIcon('🍶')">🍶</span>
+            <span class="icon-pick" onclick="pickIcon('🚼')">🚼</span>
+            <span class="icon-pick" onclick="pickIcon('🧦')">🧦</span>
+            <span class="icon-pick" onclick="pickIcon('🛁')">🛁</span>
+            <span class="icon-pick" onclick="pickIcon('💊')">💊</span>
+            <span class="icon-pick" onclick="pickIcon('🎁')">🎁</span>
+            <span class="icon-pick" onclick="pickIcon('🪥')">🪥</span>
+            <span class="icon-pick" onclick="pickIcon('🧷')">🧷</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Nama Kategori *</label>
+        <input type="text" id="categoryName" required placeholder="Contoh: Baju Bayi" oninput="autoSlug()">
+      </div>
+      
+      <div class="form-group">
+        <label>Slug (ID) *</label>
+        <input type="text" id="categorySlug" required placeholder="baju-bayi" pattern="[a-z0-9\-]+" title="Hanya huruf kecil, angka, dan tanda minus">
+        <small style="color:#999;font-size:12px;display:block;margin-top:5px">
+          Slug = ID unik kategori (huruf kecil tanpa spasi). Contoh: <b>baju-bayi</b>
+        </small>
+      </div>
+      
+      <div class="form-group">
+        <label>Sub-label (deskripsi singkat)</label>
+        <input type="text" id="categorySubLabel" placeholder="Contoh: Pakaian Lucu">
+      </div>
+      
+      <div class="form-group">
+        <label>Warna Badge</label>
+        <select id="categoryBadge">
+          <option value="badge-info">🔵 Biru</option>
+          <option value="badge-success">🟢 Hijau</option>
+          <option value="badge-warning">🟡 Kuning</option>
+          <option value="badge-danger">🔴 Merah</option>
+          <option value="badge-secondary">⚫ Abu-abu</option>
+          <option value="badge-pink">🌸 Pink</option>
+          <option value="badge-purple">🟣 Ungu</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Urutan Tampil</label>
+        <input type="number" id="categoryOrder" value="99" min="0">
+      </div>
+      
+      <button type="submit" class="btn-submit">💾 Simpan Kategori</button>
     </form>
   </div>
 </div>
@@ -295,7 +400,8 @@
 <script type="module">
 import {
   fbGetProducts, fbAddProduct, fbUpdateProduct, fbDeleteProduct,
-  fbGetOrders, fbUpdateOrder, fbSeedDefaultProducts
+  fbGetOrders, fbUpdateOrder, fbSeedDefaultProducts,
+  fbGetCategories, fbSeedCategories, fbAddCategory, fbUpdateCategory, fbDeleteCategory
 } from './firebase-config.js';
 
 window.fbGetProducts = fbGetProducts;
@@ -305,6 +411,11 @@ window.fbDeleteProduct = fbDeleteProduct;
 window.fbGetOrders = fbGetOrders;
 window.fbUpdateOrder = fbUpdateOrder;
 window.fbSeedDefaultProducts = fbSeedDefaultProducts;
+window.fbGetCategories = fbGetCategories;
+window.fbSeedCategories = fbSeedCategories;
+window.fbAddCategory = fbAddCategory;
+window.fbUpdateCategory = fbUpdateCategory;
+window.fbDeleteCategory = fbDeleteCategory;
 
 window.dispatchEvent(new Event('firebase-ready'));
 console.log('✅ Firebase module loaded');
@@ -314,9 +425,36 @@ console.log('✅ Firebase module loaded');
 <script>
 let products = [];
 let orders = [];
+let categories = [];
 let currentImageData = '';
 let firebaseReady = false;
 
+// ========== CATEGORY HELPERS ==========
+function getCategoryBySlug(slug) {
+  return categories.find(c => c.slug === slug);
+}
+
+function getCategoryBadge(slug) {
+  const c = getCategoryBySlug(slug);
+  return c ? c.badge : 'badge-info';
+}
+
+function getCategoryLabel(slug) {
+  const c = getCategoryBySlug(slug);
+  return c ? `${c.icon} ${c.name}` : slug;
+}
+
+function updateCategoryDropdown() {
+  const select = document.getElementById('productCategory');
+  if (!select) return;
+  const currentValue = select.value;
+  select.innerHTML = categories.map(c => 
+    `<option value="${c.slug}">${c.icon} ${c.name}</option>`
+  ).join('');
+  if (currentValue) select.value = currentValue;
+}
+
+// ========== FIREBASE READY ==========
 window.addEventListener('firebase-ready', () => {
   firebaseReady = true;
   if (sessionStorage.getItem('adminLoggedIn') === 'true') autoLogin();
@@ -328,6 +466,7 @@ function autoLogin() {
   initAdmin();
 }
 
+// ========== LOGIN ==========
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin123';
 
@@ -352,11 +491,30 @@ function logout() {
   location.reload();
 }
 
+// ========== INIT ==========
 async function initAdmin() {
   document.getElementById('currentDate').textContent =
     new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   setupDragDrop();
+  await loadCategories();
   await loadAll();
+}
+
+async function loadCategories() {
+  try {
+    categories = await window.fbGetCategories();
+    if (categories.length === 0) {
+      console.log('📂 Seeding default categories...');
+      await window.fbSeedCategories();
+      categories = await window.fbGetCategories();
+    }
+    categories.sort((a, b) => (a.order || 99) - (b.order || 99));
+    console.log(`✅ ${categories.length} kategori dimuat`);
+  } catch (e) {
+    console.error('Load categories error:', e);
+    categories = [];
+  }
+  updateCategoryDropdown();
 }
 
 async function loadAll() {
@@ -370,12 +528,14 @@ async function loadAll() {
     renderProductTable();
     renderOrderTable();
     renderRecentOrders();
+    renderCategoryTable();
   } catch (err) {
     banner.classList.add('active');
     showToast('❌ Gagal memuat: ' + err.message, true);
   } finally { hideLoading(); }
 }
 
+// ========== SEED ==========
 async function seedDefaults() {
   if (!confirm('Isi 12 produk contoh?')) return;
   try {
@@ -388,6 +548,7 @@ async function seedDefaults() {
   } finally { hideLoading(); }
 }
 
+// ========== STATS ==========
 function updateStats() {
   const revenue = orders.filter(o => ['Sudah Dibayar', 'Dikirim', 'Selesai'].includes(o.status)).reduce((s, o) => s + (o.total || 0), 0);
   const pending = orders.filter(o => !['Selesai', 'Dibatalkan'].includes(o.status)).length;
@@ -397,17 +558,21 @@ function updateStats() {
   document.getElementById('statPending').textContent = pending;
 }
 
+// ========== NAVIGATION ==========
 function showPage(page, el) {
   document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
   el.classList.add('active');
-  ['dashboard', 'products', 'orders'].forEach(p => {
-    document.getElementById('page-' + p).style.display = p === page ? 'block' : 'none';
+  ['dashboard', 'products', 'orders', 'categories'].forEach(p => {
+    const el = document.getElementById('page-' + p);
+    if (el) el.style.display = p === page ? 'block' : 'none';
   });
   if (page === 'dashboard') { updateStats(); renderRecentOrders(); }
   if (page === 'products') renderProductTable();
   if (page === 'orders') renderOrderTable();
+  if (page === 'categories') renderCategoryTable();
 }
 
+// ========== PRODUCT TABLE ==========
 function renderProductTable(filter = '') {
   let filtered = products;
   if (filter) filtered = filtered.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
@@ -422,7 +587,7 @@ function renderProductTable(filter = '') {
     return `<tr>
       <td>${imgHTML}</td>
       <td><div style="font-weight:600;font-size:13px">${p.name}</div><div style="color:#999;font-size:12px">⭐ ${p.rating || 4.5}</div></td>
-      <td><span class="badge badge-info">${p.category}</span></td>
+      <td><span class="badge ${getCategoryBadge(p.category)}">${getCategoryLabel(p.category)}</span></td>
       <td><b style="color:var(--primary)">Rp ${p.price.toLocaleString('id-ID')}</b>${p.oldPrice ? `<div style="font-size:12px;color:#999;text-decoration:line-through">Rp ${p.oldPrice.toLocaleString('id-ID')}</div>` : ''}</td>
       <td><span class="badge ${stockBadge}">${p.stock}</span></td>
       <td><div class="action-btns">
@@ -433,13 +598,14 @@ function renderProductTable(filter = '') {
   }).join('');
 }
 
+// ========== PRODUCT MODAL ==========
 function openProductModal(product = null) {
   document.getElementById('productModalTitle').textContent = product ? '✏️ Edit Produk' : '➕ Tambah Produk';
   document.getElementById('productId').value = product ? product.id : '';
   document.getElementById('productName').value = product ? product.name : '';
   document.getElementById('productPrice').value = product ? product.price : '';
   document.getElementById('productOldPrice').value = product ? product.oldPrice : '';
-  document.getElementById('productCategory').value = product ? product.category : 'baju';
+  document.getElementById('productCategory').value = product ? product.category : (categories[0]?.slug || 'baju');
   document.getElementById('productStock').value = product ? product.stock : '';
   document.getElementById('productRating').value = product ? product.rating : 4.5;
   document.getElementById('productDesc').value = product ? product.desc : '';
@@ -497,7 +663,7 @@ function compressImage(dataUrl, maxWidth, quality, callback) {
 function setupDragDrop() {
   const section = document.getElementById('uploadSection');
   if (!section) return;
-  ['dragenter', 'dragover'].forEach(evt => section.addEventListener(evt, e => { e.preventDefault(); }));
+  ['dragenter', 'dragover'].forEach(evt => section.addEventListener(evt, e => e.preventDefault()));
   section.addEventListener('drop', e => {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
@@ -509,6 +675,7 @@ function setupDragDrop() {
   });
 }
 
+// ========== SAVE PRODUCT ==========
 document.getElementById('productForm').addEventListener('submit', async function(e) {
   e.preventDefault();
   const id = document.getElementById('productId').value;
@@ -555,6 +722,158 @@ async function deleteProduct(id) {
   finally { hideLoading(); }
 }
 
+// ========== CATEGORY CRUD ==========
+function renderCategoryTable(filter = '') {
+  let filtered = categories;
+  if (filter) filtered = filtered.filter(c => 
+    c.name.toLowerCase().includes(filter.toLowerCase()) ||
+    c.slug.toLowerCase().includes(filter.toLowerCase())
+  );
+  
+  const tbody = document.getElementById('categoryTableBody');
+  if (!tbody) return;
+  
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="empty"><div class="emoji">📂</div>Belum ada kategori</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = filtered.map(c => {
+    const count = products.filter(p => p.category === c.slug).length;
+    return `
+      <tr>
+        <td style="font-size:28px;text-align:center">${c.icon}</td>
+        <td>
+          <div style="font-weight:600;font-size:14px">${c.name}</div>
+          <div style="font-size:12px;color:#999">${c.subLabel || '-'}</div>
+        </td>
+        <td><code style="background:#f5f5f5;padding:3px 8px;border-radius:5px;font-size:12px">${c.slug}</code></td>
+        <td>
+          <span class="badge ${c.badge || 'badge-info'}">${count} produk</span>
+        </td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-icon btn-edit" onclick="editCategory('${c.id}')">✏️ Edit</button>
+            <button class="btn-icon btn-delete" onclick="deleteCategory('${c.id}', '${c.name.replace(/'/g, "\\'")}')">🗑️ Hapus</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function openCategoryModal(category = null) {
+  document.getElementById('categoryModalTitle').textContent = category ? '✏️ Edit Kategori' : '➕ Tambah Kategori';
+  document.getElementById('categoryOriginalSlug').value = category ? category.slug : '';
+  document.getElementById('categoryIcon').value = category ? category.icon : '';
+  document.getElementById('categoryName').value = category ? category.name : '';
+  document.getElementById('categorySlug').value = category ? category.slug : '';
+  document.getElementById('categorySubLabel').value = category ? (category.subLabel || '') : '';
+  document.getElementById('categoryBadge').value = category ? (category.badge || 'badge-info') : 'badge-info';
+  document.getElementById('categoryOrder').value = category ? (category.order || 99) : 99;
+  openModal('categoryModal');
+}
+
+function editCategory(id) {
+  const c = categories.find(x => x.id === id);
+  if (c) openCategoryModal(c);
+}
+
+function pickIcon(icon) {
+  document.getElementById('categoryIcon').value = icon;
+}
+
+function autoSlug() {
+  if (document.getElementById('categoryOriginalSlug').value) return;
+  const name = document.getElementById('categoryName').value;
+  const slug = name.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+  document.getElementById('categorySlug').value = slug;
+}
+
+async function saveCategory(e) {
+  e.preventDefault();
+  const originalSlug = document.getElementById('categoryOriginalSlug').value;
+  const data = {
+    icon: document.getElementById('categoryIcon').value.trim(),
+    name: document.getElementById('categoryName').value.trim(),
+    slug: document.getElementById('categorySlug').value.trim().toLowerCase(),
+    subLabel: document.getElementById('categorySubLabel').value.trim(),
+    badge: document.getElementById('categoryBadge').value,
+    order: parseInt(document.getElementById('categoryOrder').value) || 99
+  };
+  
+  if (!/^[a-z0-9\-]+$/.test(data.slug)) {
+    return showToast('❌ Slug hanya huruf kecil, angka, dan tanda minus', true);
+  }
+  
+  const existing = categories.find(c => c.slug === data.slug && c.slug !== originalSlug);
+  if (existing) {
+    return showToast('❌ Slug sudah dipakai kategori lain', true);
+  }
+  
+  try {
+    showLoading('Menyimpan...');
+    
+    if (originalSlug) {
+      const cat = categories.find(c => c.slug === originalSlug);
+      if (!cat) throw new Error('Kategori tidak ditemukan');
+      await window.fbUpdateCategory(cat.id, data);
+      
+      if (data.slug !== originalSlug) {
+        const affectedProducts = products.filter(p => p.category === originalSlug);
+        for (const p of affectedProducts) {
+          await window.fbUpdateProduct(p.id, { category: data.slug });
+        }
+      }
+      showToast('✅ Kategori diupdate!');
+    } else {
+      await window.fbAddCategory(data);
+      showToast('✅ Kategori ditambahkan!');
+    }
+    
+    await loadCategories();
+    products = await window.fbGetProducts();
+    renderCategoryTable();
+    renderProductTable();
+    updateStats();
+    closeModal('categoryModal');
+    e.target.reset();
+  } catch (err) {
+    console.error(err);
+    showToast('❌ Gagal: ' + err.message, true);
+  } finally { hideLoading(); }
+}
+
+async function deleteCategory(id, name) {
+  const cat = categories.find(x => x.id === id);
+  if (!cat) return;
+  
+  const productCount = products.filter(p => p.category === cat.slug).length;
+  
+  let msg = `Hapus kategori "${name}"?`;
+  if (productCount > 0) {
+    msg += `\n\n⚠️ Ada ${productCount} produk dengan kategori ini.\nProduk tersebut akan tetap ada, tapi kategorinya tidak akan tampil di dropdown.`;
+  }
+  
+  if (!confirm(msg)) return;
+  
+  try {
+    showLoading('Menghapus...');
+    await window.fbDeleteCategory(id);
+    await loadCategories();
+    renderCategoryTable();
+    updateStats();
+    showToast('🗑️ Kategori dihapus');
+  } catch (err) {
+    showToast('❌ Gagal: ' + err.message, true);
+  } finally { hideLoading(); }
+}
+
+// ========== ORDER TABLE ==========
 function renderOrderTable(filter = '') {
   let filtered = orders;
   if (filter) filtered = filtered.filter(o => (o.orderId || '').toLowerCase().includes(filter.toLowerCase()) || (o.customer || '').toLowerCase().includes(filter.toLowerCase()));
@@ -651,6 +970,7 @@ function renderRecentOrders() {
   </table>`;
 }
 
+// ========== UTILS ==========
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 function showToast(msg, isError = false) {
@@ -663,7 +983,7 @@ function showLoading(text) { document.getElementById('loadingText').textContent 
 function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
 document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) m.classList.remove('active'); }));
 
-// EXPOSE
+// ========== EXPOSE ==========
 window.showPage = showPage;
 window.openProductModal = openProductModal;
 window.editProduct = editProduct;
@@ -672,13 +992,20 @@ window.viewOrder = viewOrder;
 window.changeOrderStatus = changeOrderStatus;
 window.renderProductTable = renderProductTable;
 window.renderOrderTable = renderOrderTable;
+window.renderCategoryTable = renderCategoryTable;
+window.openCategoryModal = openCategoryModal;
+window.editCategory = editCategory;
+window.saveCategory = saveCategory;
+window.deleteCategory = deleteCategory;
+window.pickIcon = pickIcon;
+window.autoSlug = autoSlug;
 window.removeImage = removeImage;
 window.openModal = openModal;
 window.closeModal = closeModal;
 window.seedDefaults = seedDefaults;
 window.logout = logout;
 
-// SERVICE WORKER
+// ========== SERVICE WORKER ==========
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
 }
@@ -686,4 +1013,4 @@ if ('serviceWorker' in navigator) {
 console.log('🚀 Admin loaded');
 </script>
 </body>
-</html>
+         </html>
