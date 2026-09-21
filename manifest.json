@@ -1,20 +1,69 @@
 {
-  "name": "BabyCare Shop",
+  "name": "BabyCare Shop - Fashion & Baby Care Online",
   "short_name": "BabyCare",
+  "description": "Toko online fashion bayi & baby care terlengkap. Belanja pakaian lucu, perawatan lembut, dan mainan edukatif untuk si kecil.",
+  "id": "/2025-design/",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffd6e7",
   "theme_color": "#ff6b9d",
+  "lang": "id-ID",
+  "dir": "ltr",
+  "categories": ["shopping", "lifestyle", "kids", "health"],
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Halaman Utama BabyCare Shop"
+    },
+    {
+      "src": "screenshot-2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Kategori Produk"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Keranjang Belanja",
+      "short_name": "Keranjang",
+      "description": "Lihat keranjang belanja Anda",
+      "url": "./index.html?open=cart",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Wishlist",
+      "short_name": "Wishlist",
+      "description": "Lihat produk favorit Anda",
+      "url": "./index.html?open=wishlist",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Akun Saya",
+      "short_name": "Akun",
+      "description": "Lihat pesanan & profil Anda",
+      "url": "./index.html?open=account",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ],
+  "prefer_related_applications": false
 }
