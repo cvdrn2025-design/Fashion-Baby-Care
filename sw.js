@@ -1,125 +1,131 @@
-// sw.js - Service Worker untuk BabyCare Shop PWA
-const CACHE_NAME = 'babycare-v1.0.0';
-const RUNTIME_CACHE = 'babycare-runtime-v1.0.0';
+// sw.js — BabyCare Shop
+const VERSION = 'v2';
+const STATIC_CACHE = `babycare-static-${VERSION}`;
+const RUNTIME_CACHE = `babycare-runtime-${VERSION}`;
 
-// File yang di-cache saat install (shell aplikasi)
-const PRECACHE_URLS = [
+const PRECACHE = [
   './',
   './index.html',
   './admin.html',
+  './firebase-config.js',
   './manifest.json',
+  './offline.html',
+  './icon-192.png',
+  './icon-512.png',
   './qris.png'
 ];
 
-// Install event - cache shell
+// Permintaan ke API Firebase (Firestore/Auth) tidak boleh dicache/dicegat.
+const isFirebaseApi = (url) =>
+  /(^|\.)googleapis\.com$/.test(url.hostname) || url.hostname.endsWith('firebaseio.com');
+const isFirebaseSdk = (url) =>
+  url.hostname === 'www.gstatic.com' && url.pathname.startsWith('/firebasejs/');
+
+async function precache() {
+  const cache = await caches.open(STATIC_CACHE);
+  // allSettled: satu file yang belum ada tidak menggagalkan instalasi.
+  await Promise.allSettled(PRECACHE.map(url => cache.add(url)));
+}
+
+async function notifyClients(message) {
+  const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
+  clients.forEach(c => c.postMessage(message));
+}
+
+// ===== INSTALL / ACTIVATE =====
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Caching shell files');
-      return cache.addAll(PRECACHE_URLS).catch((err) => {
-        console.warn('[SW] Some files failed to cache:', err);
-      });
-    }).then(() => self.skipWaiting())
-  );
+  event.waitUntil(precache().then(() => self.skipWaiting()));
 });
 
-// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating...');
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME && name !== RUNTIME_CACHE)
-          .map((name) => {
-            console.log('[SW] Deleting old cache:', name);
-            return caches.delete(name);
-          })
-      );
-    }).then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    const keep = [STATIC_CACHE, RUNTIME_CACHE];
+    const names = await caches.keys();
+    await Promise.all(names.filter(n => !keep.includes(n)).map(n => caches.delete(n)));
+    if (self.registration.navigationPreload) await self.registration.navigationPreload.enable();
+    await self.clients.claim();
+  })());
 });
 
-// Fetch event - strategy:
-// - Firebase & API calls: network only (jangan cache)
-// - Gambar & static: cache first
-// - HTML: network first, fallback to cache
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+// ===== FETCH =====
+async function networkFirstPage(event) {
+  try {
+    const preload = await event.preloadResponse;
+    const response = preload || await fetch(event.request);
+    const cache = await caches.open(STATIC_CACHE);
+    cache.put(event.request, response.clone());
+    return response;
+  } catch (err) {
+    const cached = await caches.match(event.request, { ignoreSearch: true });
+    return cached
+      || await caches.match('./index.html')
+      || await caches.match('./offline.html');
+  }
+}
+
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(RUNTIME_CACHE);
+  const cached = await cache.match(request);
+  const network = fetch(request).then(response => {
+    if (response && (response.ok || response.type === 'opaque')) cache.put(request, response.clone());
+    return response;
+  }).catch(() => cached);
+  return cached || network;
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+  if (request.method !== 'GET') return;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
-  if (request.method !== 'GET') return;
+  if (isFirebaseApi(url)) return;
 
-  // Skip Firebase requests (selalu network)
-  if (
-    url.hostname.includes('firebase') ||
-    url.hostname.includes('googleapis') ||
-    url.hostname.includes('gstatic')
-  ) {
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirstPage(event));
     return;
   }
-
-  // Strategy: Network First untuk HTML
-  if (request.headers.get('accept')?.includes('text/html')) {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
-          return response;
-        })
-        .catch(() => caches.match(request).then((r) => r || caches.match('./index.html')))
-    );
-    return;
+  if (url.origin === self.location.origin || isFirebaseSdk(url)) {
+    event.respondWith(staleWhileRevalidate(request));
   }
-
-  // Strategy: Cache First untuk gambar & assets
-  if (
-    request.destination === 'image' ||
-    request.destination === 'style' ||
-    request.destination === 'script' ||
-    request.destination === 'font'
-  ) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        return fetch(request).then((response) => {
-          if (response.status === 200) {
-            const copy = response.clone();
-            caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
-          }
-          return response;
-        });
-      }).catch(() => {
-        // Fallback untuk gambar
-        if (request.destination === 'image') {
-          return new Response(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200"><rect fill="#ffd6e7" width="200" height="200"/><text x="100" y="110" font-size="60" text-anchor="middle">📦</text></svg>',
-            { headers: { 'Content-Type': 'image/svg+xml' } }
-          );
-        }
-      })
-    );
-    return;
-  }
-
-  // Default: network first dengan fallback cache
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        const copy = response.clone();
-        caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, copy));
-        return response;
-      })
-      .catch(() => caches.match(request))
-  );
 });
 
-// Message event - untuk skip waiting
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
+// ===== PUSH NOTIFICATION =====
+self.addEventListener('push', (event) => {
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch { data = { body: event.data ? event.data.text() : '' }; }
+  const title = data.title || 'BabyCare Shop';
+  event.waitUntil(self.registration.showNotification(title, {
+    body: data.body || 'Ada pembaruan untuk Anda',
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    data: { url: data.url || './index.html' }
+  }));
 });
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || './index.html';
+  event.waitUntil((async () => {
+    const list = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    for (const c of list) {
+      if ('focus' in c) { await c.focus(); if ('navigate' in c) c.navigate(target); return; }
+    }
+    await self.clients.openWindow(target);
+  })());
+});
+
+// ===== BACKGROUND SYNC =====
+// Halaman dapat mendaftarkan tag 'sync-data' saat offline; saat online kembali, halaman diberi tahu untuk mencoba ulang.
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-data') event.waitUntil(notifyClients({ type: 'SYNC', tag: event.tag }));
+});
+
+// ===== PERIODIC BACKGROUND SYNC =====
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'refresh-content') event.waitUntil(precache());
+});
+
