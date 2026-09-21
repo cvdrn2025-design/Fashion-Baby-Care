@@ -2,11 +2,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
   getFirestore, collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
-  query, orderBy, serverTimestamp, writeBatch, where
+  query, orderBy, serverTimestamp, writeBatch, where, setDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import {
   getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
-  signOut, onAuthStateChanged, updateProfile
+  signOut, onAuthStateChanged, updateProfile, sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -30,14 +30,11 @@ export function fbOnAuthChange(callback) {
 export async function fbRegister(email, password, displayName) {
   const cred = await createUserWithEmailAndPassword(auth, email, password);
   await updateProfile(cred.user, { displayName });
-  // Simpan data user ke Firestore
-  await updateDoc(doc(db, "users", cred.user.uid), {}).catch(async () => {
-    // Jika doc belum ada, buat baru
-    const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
+  try {
     await setDoc(doc(db, "users", cred.user.uid), {
       email, displayName, createdAt: serverTimestamp()
-    });
-  });
+    }, { merge: true });
+  } catch (e) { console.warn('Save user error:', e); }
   return cred.user;
 }
 
@@ -54,6 +51,10 @@ export function fbCurrentUser() {
   return auth.currentUser;
 }
 
+export async function fbResetPassword(email) {
+  await sendPasswordResetEmail(auth, email);
+}
+
 // ========== USERS ==========
 export async function fbGetUserProfile(uid) {
   const snap = await getDoc(doc(db, "users", uid));
@@ -61,12 +62,7 @@ export async function fbGetUserProfile(uid) {
 }
 
 export async function fbUpdateUserProfile(uid, data) {
-  const { setDoc, mergeDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-  // merge: true agar tidak overwrite
-  await updateDoc(doc(db, "users", uid), data).catch(async () => {
-    const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
-    await setDoc(doc(db, "users", uid), data, { merge: true });
-  });
+  await setDoc(doc(db, "users", uid), data, { merge: true });
 }
 
 // ========== PRODUCTS ==========
@@ -102,6 +98,61 @@ export async function fbDeleteProduct(id) {
   return await deleteDoc(doc(db, "products", id));
 }
 
+// ========== CATEGORIES ==========
+export async function fbGetCategories() {
+  try {
+    const snap = await getDocs(collection(db, "categories"));
+    if (snap.empty) return [];
+    const cats = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    cats.sort((a, b) => (a.order || 99) - (b.order || 99));
+    return cats;
+  } catch (e) {
+    console.error('fbGetCategories error:', e);
+    return [];
+  }
+}
+
+const DEFAULT_CATEGORIES = [
+  { slug: 'baju', name: 'Baju Bayi', icon: '👕', subLabel: 'Pakaian Lucu', badge: 'badge-info', order: 1 },
+  { slug: 'celana', name: 'Celana', icon: '👖', subLabel: 'Nyaman & Elastis', badge: 'badge-info', order: 2 },
+  { slug: 'aksesoris', name: 'Aksesoris', icon: '🎀', subLabel: 'Topi, Selimut, dll', badge: 'badge-warning', order: 3 },
+  { slug: 'perawatan', name: 'Perawatan', icon: '🧴', subLabel: 'Sabun, Minyak, dll', badge: 'badge-success', order: 4 },
+  { slug: 'mainan', name: 'Mainan', icon: '🧸', subLabel: 'Edukatif & Aman', badge: 'badge-secondary', order: 5 },
+  { slug: 'sepatu', name: 'Sepatu', icon: '👟', subLabel: 'Soft Sole Anti Slip', badge: 'badge-danger', order: 6 },
+  { slug: 'perlengkapan', name: 'Perlengkapan Bayi', icon: '🍼', subLabel: 'Bedong, Gendongan', badge: 'badge-pink', order: 7 },
+  { slug: 'mpasi', name: 'MPASI & Makanan', icon: '🍽️', subLabel: 'Bubur, Snack Bayi', badge: 'badge-success', order: 8 },
+  { slug: 'botol', name: 'Botol & Dot', icon: '🍶', subLabel: 'Botol Susu, Dot', badge: 'badge-warning', order: 9 },
+  { slug: 'stroller', name: 'Stroller & Car Seat', icon: '🚼', subLabel: 'Kereta Bayi', badge: 'badge-purple', order: 10 }
+];
+
+export async function fbSeedCategories() {
+  const existing = await fbGetCategories();
+  if (existing.length > 0) return { seeded: false, count: existing.length };
+  const batch = writeBatch(db);
+  DEFAULT_CATEGORIES.forEach(cat => {
+    const ref = doc(collection(db, "categories"));
+    batch.set(ref, { ...cat, createdAt: serverTimestamp() });
+  });
+  await batch.commit();
+  return { seeded: true, count: DEFAULT_CATEGORIES.length };
+}
+
+export async function fbAddCategory(data) {
+  return await addDoc(collection(db, "categories"), {
+    ...data, createdAt: serverTimestamp()
+  });
+}
+
+export async function fbUpdateCategory(id, data) {
+  return await updateDoc(doc(db, "categories", id), {
+    ...data, updatedAt: serverTimestamp()
+  });
+}
+
+export async function fbDeleteCategory(id) {
+  return await deleteDoc(doc(db, "categories", id));
+}
+
 // ========== ORDERS ==========
 export async function fbGetOrders() {
   try {
@@ -119,7 +170,6 @@ export async function fbGetOrders() {
   }
 }
 
-// Get orders milik user tertentu
 export async function fbGetUserOrders(uid) {
   try {
     const q = query(collection(db, "orders"), where("userId", "==", uid));
@@ -163,11 +213,10 @@ export async function fbGetWishlist(uid) {
 }
 
 export async function fbSaveWishlist(uid, items) {
-  const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js");
   await setDoc(doc(db, "wishlists", uid), { items });
 }
 
-// ========== SEED ==========
+// ========== SEED PRODUCTS ==========
 const DEFAULT_PRODUCTS = [
   { name: "Baju Bayi Lengan Panjang Katun Premium", price: 75000, oldPrice: 95000, category: "baju", emoji: "👕", image: "", rating: 4.8, stock: 50, desc: "Bahan katun 100% lembut, aman untuk kulit sensitif bayi. Tersedia ukuran 0-24 bulan." },
   { name: "Celana Joger Bayi Lucu Motif Hewan", price: 55000, oldPrice: 70000, category: "celana", emoji: "👖", image: "", rating: 4.7, stock: 30, desc: "Celana joger elastis dengan motif hewan menggemaskan." },
